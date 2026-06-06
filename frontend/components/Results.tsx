@@ -116,12 +116,20 @@ function JobsTab({ r }: { r?: AgentResult }) {
       <div className="grid max-h-[480px] gap-2 overflow-auto pr-1 sm:grid-cols-2">
         {filtered.map((j, i) => (
           <a key={i} href={j.apply_link} target="_blank" rel="noreferrer"
-            className="group flex items-center justify-between gap-3 rounded-lg border border-black/[0.06] p-3 transition hover:border-sakura-300 hover:bg-sakura-50/40">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-ink">{j.title}</p>
-              <p className="truncate text-xs text-ink/55">{j.employer}{j.city ? ` · ${j.city}` : ""}{j.employment_type ? ` · ${j.employment_type}` : ""}</p>
+            className="group rounded-lg border border-black/[0.06] p-3 transition hover:border-sakura-300 hover:bg-sakura-50/40">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-ink">{j.title}</p>
+                <p className="truncate text-xs text-ink/55">{j.employer}{j.city ? ` · ${j.city}` : ""}{j.employment_type ? ` · ${j.employment_type}` : ""}</p>
+              </div>
+              {typeof j.match === "number" ? (
+                <span className={"shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold " +
+                  (j.match >= 70 ? "bg-emerald-50 text-emerald-700" : j.match >= 45 ? "bg-amber-50 text-amber-700" : "bg-black/[0.05] text-ink/50")}>
+                  {j.match}% fit
+                </span>
+              ) : <ExternalLink className="h-4 w-4 shrink-0 text-ink/30 group-hover:text-sakura-600" />}
             </div>
-            <ExternalLink className="h-4 w-4 shrink-0 text-ink/30 group-hover:text-sakura-600" />
+            {j.fit_reason && <p className="mt-1.5 text-xs text-ink/50">💡 {j.fit_reason}</p>}
           </a>
         ))}
         {!filtered.length && <p className="py-6 text-sm text-ink/40">No matches for “{q}”.</p>}

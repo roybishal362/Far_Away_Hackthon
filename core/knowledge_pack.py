@@ -29,25 +29,50 @@ SECTORS: list[dict] = [
     {"name": "Logistics & Warehousing", "ja": "倉庫・物流", "desc": "Receiving, picking, packing, dispatch. New field."},
 ]
 
-# Non-SSW route surfaced explicitly so IT/engineering candidates aren't misled.
-NON_SSW_IT = {
-    "name": "Software / IT / Engineering",
-    "verdict": "Not an SSW field — use the Engineer visa",
-    "detail": (
-        "Software/IT/engineering roles are NOT covered by SSW. The correct status is "
-        "'Engineer/Specialist in Humanities/International Services' (技術・人文知識・国際業務 / 'Gijinkoku'), "
-        "the standard work visa for software/system engineers, programmers, data scientists, etc. "
-        "Requires a relevant bachelor's degree (or ~10 yrs experience, or a Japan-recognised IT qualification), "
-        "an employer contract, and equal pay. High earners can target the points-based 'Highly Skilled Professional' "
-        "status for faster permanent residence."
-    ),
-    "resources": [
-        {"name": "ISA — Engineer/Specialist in Humanities/International Services", "url": "https://www.moj.go.jp/isa/applications/status/gijinkoku.html", "purpose": "Official status-of-residence page for the IT/engineering work visa."},
-        {"name": "ISA — Highly Skilled Professional", "url": "https://www.moj.go.jp/isa/applications/status/hsp_index.html", "purpose": "Points-based status for high-end talent (faster PR)."},
-    ],
+# Non-SSW routes surfaced explicitly so white-collar/professional candidates aren't misled.
+GIJINKOKU_RESOURCES = [
+    {"name": "ISA — Engineer/Specialist in Humanities/International Services", "url": "https://www.moj.go.jp/isa/applications/status/gijinkoku.html", "purpose": "Official status page for IT/engineering AND business/humanities professional work visas (技人国)."},
+    {"name": "ISA — Highly Skilled Professional", "url": "https://www.moj.go.jp/isa/applications/status/hsp_index.html", "purpose": "Points-based status for high earners (faster permanent residence)."},
+]
+
+NON_SSW = {
+    "engineer": {
+        "name": "Software / IT / Engineering",
+        "verdict": "Use the Engineer visa (技人国), not SSW",
+        "detail": (
+            "Software/IT/engineering roles are NOT covered by SSW. The correct status is the Engineer track of "
+            "'Engineer/Specialist in Humanities/International Services' (技人国) — for software/system engineers, "
+            "programmers, data scientists, etc. Requires a relevant bachelor's degree (or ~10 yrs experience, or a "
+            "Japan-recognised IT qualification), an employer contract, and pay equal to a Japanese national."
+        ),
+        "resources": GIJINKOKU_RESOURCES,
+    },
+    "specialist": {
+        "name": "Business / HR / Office / Humanities",
+        "verdict": "Use the Specialist in Humanities/International Services visa (技人国), not SSW",
+        "detail": (
+            "Office/professional roles — HR, recruiting, marketing, finance, accounting, sales, management, "
+            "planning, consulting, translation — are NOT SSW fields. The correct status is the "
+            "'Specialist in Humanities/International Services' track of 技人国. It requires a relevant bachelor's "
+            "degree (or ~10 years of experience), a contract with a Japanese employer for professional duties, and "
+            "pay equal to a Japanese national. Periods of stay 1/3/5 years, renewable, leading to permanent residence."
+        ),
+        "resources": GIJINKOKU_RESOURCES,
+    },
 }
 
-IT_KEYWORDS = ["it", "software", "developer", "programmer", "engineer", "data scien", "web", "tech", "coding", "computer"]
+IT_KEYWORDS = ["it", "software", "developer", "programmer", "engineer", "data scien", "web", "tech", "coding", "computer", "devops", "machine learning", "ai "]
+PROFESSIONAL_KEYWORDS = ["hr", "human resource", "recruit", "marketing", "finance", "account", "sales", "manage", "business", "consult", "analyst", "admin", "clerk", "office", "translat", "teacher", "lawyer", "economist", "banker", "auditor"]
+
+
+def classify_route_keywords(text: str) -> str:
+    """Heuristic fallback router: engineer | specialist | ssw."""
+    t = (text or "").lower()
+    if any(k in t for k in IT_KEYWORDS):
+        return "engineer"
+    if any(k in t for k in PROFESSIONAL_KEYWORDS):
+        return "specialist"
+    return "ssw"
 
 # --- The ordered overseas (India -> Japan) SSW journey with REAL links ---
 PROCEDURE_STEPS: list[dict] = [

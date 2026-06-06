@@ -17,11 +17,15 @@ def lang_directive(p: WorkerProfile) -> str:
 
 
 def profile_text(p: WorkerProfile) -> str:
-    return (
+    base = (
         f"Skills/experience: {p.skills or 'unspecified'}; years: {p.years_experience}; "
         f"sector interest: {p.sector_interest or 'open'}; Japanese level: {p.japanese_level}; "
         f"education: {p.education or 'unspecified'}; route: {p.origin_city} -> {p.target_city}."
     )
+    resume = getattr(p, "resume_text", "") or ""
+    if resume.strip():
+        base += f"\n\nRESUME (use these real details to personalize):\n{resume[:1500]}"
+    return base
 
 
 def gather(query: str, k: int = 5) -> tuple[list[Passage], str]:

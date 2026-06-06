@@ -23,8 +23,10 @@ def _pack_context() -> str:
     res = "; ".join(f"{r['name']} ({r['url']})" for r in KP.STUDY_RESOURCES[:6])
     return (
         f"FEES — {fees}. {KP.SALARY_NOTE}\n"
-        f"SALARIES (gross/month) — {sal}; other sectors ¥{KP.SALARY_DEFAULT['min']:,}-{KP.SALARY_DEFAULT['max']:,}.\n"
-        f"IT/SOFTWARE — {KP.NON_SSW_IT['detail']}\n"
+        f"SSW SALARIES (gross/month) — {sal}; other SSW sectors ¥{KP.SALARY_DEFAULT['min']:,}-{KP.SALARY_DEFAULT['max']:,}.\n"
+        f"IT/SOFTWARE/ENGINEERING — {KP.NON_SSW['engineer']['detail']}\n"
+        f"OFFICE/HR/BUSINESS/HUMANITIES — {KP.NON_SSW['specialist']['detail']}\n"
+        f"NON-SSW SALARY — professional/engineer roles vary widely by role & company, typically higher than SSW; check live job listings for figures.\n"
         f"FREE STUDY RESOURCES — {res}.\n"
         f"SECTORS — {', '.join(s['name'] for s in KP.SECTORS)}."
     )

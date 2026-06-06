@@ -7,6 +7,7 @@ export interface Profile {
   origin_city: string;
   target_city: string;
   lang: string;
+  resume_text?: string;
 }
 
 export interface Citation {

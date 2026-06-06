@@ -6,9 +6,36 @@ pathway's sector to a clean search term and search broadly across Japan.
 """
 from __future__ import annotations
 
+from core.agents._common import profile_text
 from core.agents.base import Agent, AgentResult, ReasoningStep
+from core.llm import get_llm
 from core.tools.jobs import JobsTool
 from core.types import WorkerProfile
+
+
+def _rank(jobs: list[dict], profile: WorkerProfile) -> list[dict]:
+    """Score each job's fit to THIS worker (uses skills + resume), then sort best-first."""
+    llm = get_llm()
+    if not llm.available() or not jobs:
+        return jobs
+    listing = "\n".join(f"{i}. {j.get('title')} @ {j.get('employer')}" for i, j in enumerate(jobs))
+    try:
+        d = llm.json(
+            "Score how well each job fits THIS worker (0-100) and give a short one-line reason referencing their "
+            'background. Return JSON {"ranked":[{"i":<index>,"score":<0-100>,"reason":"..."}]}.',
+            f"Worker: {profile_text(profile)}\n\nJOBS:\n{listing}",
+            temperature=0.2,
+        )
+        by_i = {int(x["i"]): x for x in d.get("ranked", []) if "i" in x}
+        for i, j in enumerate(jobs):
+            x = by_i.get(i)
+            if x:
+                j["match"] = x.get("score")
+                j["fit_reason"] = x.get("reason")
+        jobs = sorted(jobs, key=lambda j: (j.get("match") is not None, j.get("match") or 0), reverse=True)
+    except Exception:
+        pass
+    return jobs
 
 # SSW sector phrasing -> the occupation keyword job boards actually use.
 SECTOR_KEYWORDS = {
@@ -59,9 +86,11 @@ class JobsAgent(Agent):
 
         jobs = result.data or []
         steps.append(ReasoningStep(f"Found {len(jobs)} real openings", result.source, kind="tool_result"))
+        jobs = _rank(jobs, profile)
+        steps.append(ReasoningStep("Ranked jobs by fit to your profile", kind="decide"))
         return AgentResult(
             agent=self.name,
-            summary=f"{len(jobs)} live openings matching '{keyword}' in Japan.",
+            summary=f"{len(jobs)} live openings matching '{keyword}' in Japan, ranked by fit.",
             data={"sector": sector, "keyword": keyword, "jobs": jobs},
             citations=result.citations,
             confidence=0.95 if jobs else 0.3,

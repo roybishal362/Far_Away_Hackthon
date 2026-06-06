@@ -50,6 +50,7 @@ class ProfileIn(BaseModel):
     origin_city: str = "Delhi"
     target_city: str = "Tokyo"
     lang: str = "en"
+    resume_text: str = ""
 
 
 def _profile(p: ProfileIn) -> WorkerProfile:
@@ -164,7 +165,9 @@ async def resume_endpoint(file: UploadFile = File(...)) -> dict:
             text = ""
     else:
         text = raw.decode("utf-8", errors="ignore")
-    return resume_mod.extract(text)
+    fields = resume_mod.extract(text)
+    fields["resume_text"] = text[:4000]  # keep raw text for deep personalization
+    return fields
 
 
 @app.post("/dossier")

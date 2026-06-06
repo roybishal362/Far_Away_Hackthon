@@ -26,6 +26,7 @@ class WorkerProfile:
     origin_city: str = "Delhi"
     target_city: str = "Tokyo"       # for jobs + flights
     lang: str = "en"                 # output language: en | hi | ja
+    resume_text: str = ""            # raw resume text for deep personalization
     languages: list[str] = field(default_factory=lambda: ["en"])
 
     def redacted(self) -> dict:

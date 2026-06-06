@@ -48,6 +48,7 @@ const DEFAULTS: Profile = {
   origin_city: "Delhi",
   target_city: "Tokyo",
   lang: "en",
+  resume_text: "",
 };
 
 export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; loading: boolean }) {

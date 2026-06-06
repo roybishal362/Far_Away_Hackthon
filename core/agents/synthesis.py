@@ -27,8 +27,14 @@ class SynthesisAgent(Agent):
             if recs and isinstance(recs[0], dict) and recs[0].get("sector"):
                 sector = recs[0]["sector"]
 
-        salary = KP.salary_for(sector)
+        is_redirect = bool(pathway and getattr(pathway, "data", None) and pathway.data.get("non_ssw"))
+        if is_redirect:
+            salary = {"min": None, "max": None,
+                      "note": "Professional/engineer roles (Engineer or Specialist visa) vary widely by role & company — typically higher than SSW. Check live listings for exact figures."}
+        else:
+            salary = KP.salary_for(sector)
         n_jobs = len(jobs.data.get("jobs", [])) if jobs and getattr(jobs, "data", None) else 0
+        salary_str = f"¥{salary['min']:,}-{salary['max']:,}/mo" if salary.get("min") else "varies (professional role)"
 
         note = ""
         llm = get_llm()
@@ -38,7 +44,7 @@ class SynthesisAgent(Agent):
                     "You are Kakehashi. Write a warm, motivating 3-4 sentence personal overview of this worker's "
                     "path to Japan. Be specific and encouraging; do not invent facts.",
                     f"Worker: {profile_text(profile)}\nVerdict: {verdict} | readiness {readiness}% | sector {sector} | "
-                    f"{n_jobs} live jobs | salary ¥{salary['min']:,}-{salary['max']:,}/mo\nReturn JSON {{\"summary\":\"...\"}}" + lang_directive(profile),
+                    f"{n_jobs} live jobs | salary {salary_str}\nReturn JSON {{\"summary\":\"...\"}}" + lang_directive(profile),
                     temperature=0.5,
                 )
                 note = d.get("summary", "")

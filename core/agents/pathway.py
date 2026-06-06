@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from core.agents._common import gather, lang_directive, profile_text, used_citations
 from core.agents.base import Agent, AgentResult, ReasoningStep
-from core.knowledge_pack import NON_SSW_IT, is_it_sector
+from core.knowledge_pack import NON_SSW, classify_route_keywords
 from core.llm import LLMNotConfigured, get_llm
 from core.types import Citation, WorkerProfile
 
@@ -54,30 +54,62 @@ def _heuristic_readiness(profile: WorkerProfile) -> int:
 class PathwayAgent(Agent):
     name = "pathway"
 
+    def _classify(self, profile: WorkerProfile) -> str:
+        """Pick the right Japan work-visa route: ssw | engineer | specialist."""
+        llm = get_llm()
+        if llm.available():
+            try:
+                d = llm.json(
+                    "Classify the best Japan work-visa route for this person. Routes: 'ssw' (Specified Skilled Worker — "
+                    "blue-collar/service DESIGNATED fields: nursing care, construction, food service, food manufacturing, "
+                    "agriculture, fishery, building cleaning, manufacturing, automobile maintenance, aviation, accommodation, "
+                    "shipbuilding, road transport, railway, forestry, wood, recycling, linen, logistics); 'engineer' "
+                    "(software/IT/engineering); 'specialist' (white-collar/office/business/humanities — HR, finance, marketing, "
+                    'sales, management, consulting, translation, teaching). Return JSON {"route":"ssw|engineer|specialist"}.',
+                    profile_text(profile),
+                    temperature=0.0,
+                )
+                r = str(d.get("route", "")).strip().lower()
+                if r in ("ssw", "engineer", "specialist"):
+                    return r
+            except Exception:
+                pass
+        return classify_route_keywords(f"{profile.sector_interest} {profile.skills}")
+
     def run(self, profile: WorkerProfile, context: dict) -> AgentResult:
-        # Correctness guard: IT/software/engineering is NOT an SSW field — route to the Engineer visa.
-        if is_it_sector(profile.sector_interest) or is_it_sector(profile.skills):
+        # Smart routing: SSW only fits designated blue-collar/service fields. Office/IT roles
+        # get routed to the correct visa instead of a vague "not sure".
+        route = self._classify(profile)
+        if route != "ssw":
+            info = NON_SSW[route]
+            note = info["detail"]
+            try:
+                d = get_llm().json(
+                    "You are a Japan work-visa advisor. In 2-3 sentences tell THIS person why SSW doesn't fit and how the "
+                    "recommended visa works for their specific background. Be concrete to their profile.",
+                    f"Worker: {profile_text(profile)}\nRecommended route: {info['name']} — {info['verdict']}\n"
+                    f'Return JSON {{"summary":"..."}}' + lang_directive(profile),
+                    temperature=0.4,
+                )
+                note = d.get("summary") or info["detail"]
+            except Exception:
+                note = info["detail"]
             data = {
                 "eligibility_verdict": "redirect",
                 "readiness_percent": None,
                 "recommended_sectors": [],
                 "what_you_have": [],
-                "what_you_need": [NON_SSW_IT["detail"]],
+                "what_you_need": [info["detail"]],
                 "timeline": "",
                 "requirements": [],
-                "caveats": [NON_SSW_IT["verdict"]],
-                "summary": NON_SSW_IT["detail"],
-                "non_ssw": NON_SSW_IT,
+                "caveats": [info["verdict"]],
+                "summary": note,
+                "non_ssw": info,
             }
-            cits = [Citation(source_url=r["url"], title=r["name"], snippet=r["purpose"]) for r in NON_SSW_IT["resources"]]
+            cits = [Citation(source_url=r["url"], title=r["name"], snippet=r["purpose"]) for r in info["resources"]]
             return AgentResult(
-                agent=self.name,
-                summary="Software/IT/engineering roles use the Engineer visa (技人国), not SSW.",
-                data=data,
-                citations=cits,
-                confidence=0.95,
-                steps=[ReasoningStep("Detected IT/engineering — routing to the correct visa", NON_SSW_IT["verdict"], kind="decide")],
-                ok=True,
+                agent=self.name, summary=note, data=data, citations=cits, confidence=0.9,
+                steps=[ReasoningStep(f"Classified route: {route} (not SSW)", info["verdict"], kind="decide")], ok=True,
             )
 
         steps = [ReasoningStep(
