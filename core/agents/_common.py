@@ -5,6 +5,17 @@ from core.rag.index import Passage, get_retriever
 from core.types import Citation, WorkerProfile
 
 
+LANG_NAMES = {"en": "English", "hi": "Hindi", "ja": "Japanese"}
+
+
+def lang_directive(p: WorkerProfile) -> str:
+    """Tell the LLM to localize human-readable text values (schema keys stay English)."""
+    name = LANG_NAMES.get(getattr(p, "lang", "en"), "English")
+    if name == "English":
+        return ""
+    return f"\nIMPORTANT: Write ALL human-readable text VALUES in {name}. Keep JSON keys in English."
+
+
 def profile_text(p: WorkerProfile) -> str:
     return (
         f"Skills/experience: {p.skills or 'unspecified'}; years: {p.years_experience}; "

@@ -4,7 +4,7 @@ Japanese level and target, with REAL free/open-source resources attached
 """
 from __future__ import annotations
 
-from core.agents._common import profile_text
+from core.agents._common import lang_directive, profile_text
 from core.agents.base import Agent, AgentResult, ReasoningStep
 from core.knowledge_pack import STUDY_RESOURCES
 from core.llm import get_llm
@@ -35,7 +35,7 @@ class PrepAgent(Agent):
                 resource_hint = "; ".join(f"{r['name']} ({r['level']})" for r in STUDY_RESOURCES)
                 plan_data = llm.json(
                     SYSTEM,
-                    f"Worker: {profile_text(profile)}\nAvailable free resources you may reference by name: {resource_hint}\n\n{SCHEMA}",
+                    f"Worker: {profile_text(profile)}\nAvailable free resources you may reference by name: {resource_hint}\n\n{SCHEMA}" + lang_directive(profile),
                     temperature=0.4,
                 )
             except Exception:

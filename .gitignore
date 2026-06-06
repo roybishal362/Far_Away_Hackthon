@@ -10,6 +10,7 @@ venv/
 .streamlit/secrets.toml
 
 # Data & artifacts (keep the repo light; track in README how to get data)
+data/
 data/raw/
 *.ckpt
 *.pt

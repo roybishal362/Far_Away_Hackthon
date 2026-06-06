@@ -6,6 +6,7 @@ export interface Profile {
   education: string;
   origin_city: string;
   target_city: string;
+  lang: string;
 }
 
 export interface Citation {

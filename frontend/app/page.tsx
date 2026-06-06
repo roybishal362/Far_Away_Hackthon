@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lock, Database, EyeOff, FileCheck2 } from "lucide-react";
-import { streamRun } from "@/lib/api";
+import { streamRun, loadPlan } from "@/lib/api";
 import { Profile, RunResult, StepEvent } from "@/lib/types";
 import { Hero } from "@/components/Hero";
 import { IntakeForm } from "@/components/IntakeForm";
@@ -22,6 +22,12 @@ export default function Page() {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+
+  // Load a shared plan if the URL has ?plan=<id>
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("plan");
+    if (id) loadPlan(id).then(setResult).catch(() => {});
+  }, []);
 
   async function handleRun(p: Profile) {
     setProfile(p);
@@ -81,6 +87,10 @@ export default function Page() {
       <footer className="container-app mt-16 text-center text-sm text-ink/40">
         <p className="font-display text-lg text-bridge">Kakehashi 架け橋</p>
         <p className="mt-1">A bridge between India and Japan · FAR AWAY 2026 · Agentic &amp; Autonomous Systems</p>
+        <p className="mx-auto mt-4 max-w-2xl text-xs text-ink/35">
+          ⚠️ Guidance grounded in official sources — not legal or immigration advice. Always verify current rules,
+          fees, and dates with the official authorities (ISA, MOFA, Japan Foundation, Prometric). Information current as of June 2026.
+        </p>
       </footer>
     </main>
   );

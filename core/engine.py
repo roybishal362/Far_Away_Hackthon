@@ -43,8 +43,13 @@ def default_agents() -> list[Agent]:
     from core.agents.procedure import ProcedureAgent
     from core.agents.prep import PrepAgent
     from core.agents.journey import JourneyAgent
+    from core.agents.synthesis import SynthesisAgent
 
-    return [PathwayAgent(), JobsAgent(), ProcedureAgent(), PrepAgent(), JourneyAgent()]
+    return [PathwayAgent(), JobsAgent(), ProcedureAgent(), PrepAgent(), JourneyAgent(), SynthesisAgent()]
+
+
+# SSW-specific agents that don't apply when the worker is routed off SSW (e.g. IT -> Engineer visa).
+_SSW_ONLY = {"procedure", "prep", "journey"}
 
 
 class Engine:
@@ -61,6 +66,16 @@ class Engine:
         context: dict = {"approve": approve}
 
         for agent in self.agents:
+            # Adaptive orchestration: if Pathway routed the worker off SSW (e.g. IT -> Engineer
+            # visa), skip the SSW-only agents — don't show irrelevant SSW steps.
+            pw = result.results.get("pathway")
+            if (
+                agent.name in _SSW_ONLY
+                and pw
+                and getattr(pw, "data", None)
+                and pw.data.get("eligibility_verdict") == "redirect"
+            ):
+                continue
             try:
                 ar = agent.run(profile, context)
             except Exception as exc:  # an agent failing must not kill the whole run

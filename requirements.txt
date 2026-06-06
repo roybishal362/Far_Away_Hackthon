@@ -20,5 +20,7 @@ cryptography>=42.0     # Fernet/AES encryption-at-rest
 # Config
 python-dotenv>=1.0     # load .env for local dev
 
-# --- added in later rounds ---
-# reportlab          # Migration Dossier PDF export (Round 2)
+# Product features
+reportlab>=4.0         # Migration Dossier PDF export
+pypdf>=4.0             # resume (PDF) parsing
+python-multipart>=0.0.9  # file uploads (resume)

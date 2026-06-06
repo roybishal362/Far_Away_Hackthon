@@ -13,13 +13,19 @@ from __future__ import annotations
 import json
 import queue
 import threading
+from io import BytesIO
 
-from fastapi import FastAPI
+from fastapi import Body, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
 from config import SETTINGS
+from core import chat as chat_mod
+from core import resume as resume_mod
+from core import store
+from core.agents._common import profile_text
+from core.dossier import build as build_dossier
 from core.engine import Engine, RunResult
 from core.eval.harness import run_ablation
 from core.types import Citation, WorkerProfile
@@ -43,6 +49,7 @@ class ProfileIn(BaseModel):
     education: str = ""
     origin_city: str = "Delhi"
     target_city: str = "Tokyo"
+    lang: str = "en"
 
 
 def _profile(p: ProfileIn) -> WorkerProfile:
@@ -129,3 +136,55 @@ def run_stream(p: ProfileIn) -> StreamingResponse:
 @app.post("/eval")
 def eval_endpoint(p: ProfileIn) -> dict:
     return run_ablation(_profile(p)).to_dict()
+
+
+class ChatIn(BaseModel):
+    question: str
+    profile: ProfileIn | None = None
+    history: list[dict] = []
+
+
+@app.post("/chat")
+def chat_endpoint(c: ChatIn) -> dict:
+    pt = profile_text(_profile(c.profile)) if c.profile else ""
+    lang = c.profile.lang if c.profile else "en"
+    return chat_mod.answer(c.question, profile_text=pt, history=c.history, lang=lang)
+
+
+@app.post("/resume")
+async def resume_endpoint(file: UploadFile = File(...)) -> dict:
+    raw = await file.read()
+    name = (file.filename or "").lower()
+    if name.endswith(".pdf"):
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(BytesIO(raw))
+            text = "\n".join((pg.extract_text() or "") for pg in reader.pages)
+        except Exception:
+            text = ""
+    else:
+        text = raw.decode("utf-8", errors="ignore")
+    return resume_mod.extract(text)
+
+
+@app.post("/dossier")
+def dossier_endpoint(payload: dict = Body(...)) -> Response:
+    pdf = build_dossier(payload.get("plan", {}), payload.get("profile", {}))
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=kakehashi-dossier.pdf"},
+    )
+
+
+@app.post("/save")
+def save_endpoint(payload: dict = Body(...)) -> dict:
+    return {"id": store.save(payload)}
+
+
+@app.get("/plan/{pid}")
+def plan_endpoint(pid: str) -> dict:
+    plan = store.load(pid)
+    if not plan:
+        raise HTTPException(status_code=404, detail="plan not found")
+    return plan

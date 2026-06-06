@@ -37,7 +37,7 @@ def _get(name: str) -> str | None:
 class Settings:
     # LLM (the agents' reasoning brain) — Groq (free, fast, OpenAI-compatible)
     groq_api_key: str | None = None
-    llm_model: str = "llama-3.3-70b-versatile"  # default agent model; override via LLM_MODEL
+    llm_model: str = "openai/gpt-oss-120b"  # strong multilingual + reasoning; override via LLM_MODEL
 
     # Real-data tools
     estat_app_id: str | None = None          # Japan gov statistics (e-Stat)
@@ -56,7 +56,7 @@ class Settings:
 def load_settings() -> Settings:
     return Settings(
         groq_api_key=_get("GROQ_API_KEY"),
-        llm_model=_get("LLM_MODEL") or "llama-3.3-70b-versatile",
+        llm_model=_get("LLM_MODEL") or "openai/gpt-oss-120b",
         estat_app_id=_get("ESTAT_APP_ID"),
         jsearch_api_key=_get("JSEARCH_API_KEY"),
         amadeus_client_id=_get("AMADEUS_CLIENT_ID"),

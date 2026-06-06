@@ -65,3 +65,57 @@ export async function getHealth(): Promise<any> {
   const res = await fetch(`${API}/health`);
   return res.json();
 }
+
+export async function chat(
+  question: string,
+  profile: Profile | null,
+  history: { role: string; content: string }[]
+): Promise<{ answer: string; citations: { url: string; title: string }[] }> {
+  const res = await fetch(`${API}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, profile, history }),
+  });
+  if (!res.ok) throw new Error("Chat failed");
+  return res.json();
+}
+
+export async function uploadResume(file: File): Promise<Partial<Profile>> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch(`${API}/resume`, { method: "POST", body: fd });
+  if (!res.ok) throw new Error("Resume parse failed");
+  return res.json();
+}
+
+export async function savePlan(plan: RunResult): Promise<{ id: string }> {
+  const res = await fetch(`${API}/save`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(plan),
+  });
+  if (!res.ok) throw new Error("Save failed");
+  return res.json();
+}
+
+export async function loadPlan(id: string): Promise<RunResult> {
+  const res = await fetch(`${API}/plan/${id}`);
+  if (!res.ok) throw new Error("Plan not found");
+  return res.json();
+}
+
+export async function downloadDossier(plan: RunResult, profile: Profile | null): Promise<void> {
+  const res = await fetch(`${API}/dossier`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan, profile }),
+  });
+  if (!res.ok) throw new Error("PDF failed");
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "kakehashi-dossier.pdf";
+  a.click();
+  URL.revokeObjectURL(url);
+}

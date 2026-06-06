@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Briefcase, CalendarClock, CheckCircle2, ExternalLink, FileText, GraduationCap,
   MapPin, Search, ShieldCheck, Sparkles, AlertTriangle, Plane, BookOpen,
+  MessageCircle, Download, Share2, Loader2, Wallet, Send, Home, Copy,
 } from "lucide-react";
 import { AgentResult, Profile, RunResult } from "@/lib/types";
+import { chat, downloadDossier, savePlan } from "@/lib/api";
 import { CitationRow } from "./Citation";
 import { ProofDashboard } from "./ProofDashboard";
 
@@ -132,12 +134,32 @@ function JobsTab({ r }: { r?: AgentResult }) {
 /* ---------- Procedure (real links per step) ---------- */
 
 function ProcedureTab({ r }: { r?: AgentResult }) {
+  const [done, setDone] = useState<Record<number, boolean>>({});
+  useEffect(() => {
+    try { setDone(JSON.parse(localStorage.getItem("kakehashi-progress") || "{}")); } catch {}
+  }, []);
+  const toggle = (i: number) =>
+    setDone((prev) => {
+      const next = { ...prev, [i]: !prev[i] };
+      try { localStorage.setItem("kakehashi-progress", JSON.stringify(next)); } catch {}
+      return next;
+    });
+
   if (!r?.ok) return <Empty msg="Procedure unavailable." />;
   const d = r.data || {};
   const steps: any[] = d.steps || [];
+  const completed = steps.filter((_, i) => done[i]).length;
+
   return (
     <div className="space-y-4">
       {d.summary && <div className="card text-sm text-ink/75">{d.summary}</div>}
+      <div className="card flex items-center gap-4">
+        <span className="text-sm font-medium text-ink/70">Your progress</span>
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/[0.06]">
+          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${steps.length ? (completed / steps.length) * 100 : 0}%` }} />
+        </div>
+        <span className="text-sm">{completed}/{steps.length}</span>
+      </div>
       {d.skills_test && (
         <div className="card border-marigold-400/30 bg-marigold-400/[0.06]">
           <p className="text-sm"><b>Your sector skills test:</b> {d.skills_test.test_name}</p>
@@ -147,11 +169,15 @@ function ProcedureTab({ r }: { r?: AgentResult }) {
         </div>
       )}
       {steps.map((s, i) => (
-        <div key={i} className="card">
+        <div key={i} className={"card transition " + (done[i] ? "opacity-60" : "")}>
           <div className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-800 text-sm font-semibold text-white">{i + 1}</span>
+            <button onClick={() => toggle(i)} title="Mark done"
+              className={"flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition " +
+                (done[i] ? "bg-emerald-600 text-white" : "bg-indigo-800 text-white hover:bg-indigo-700")}>
+              {done[i] ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+            </button>
             <div className="min-w-0 flex-1">
-              <h5 className="font-medium text-ink">{s.step}</h5>
+              <h5 className={"font-medium text-ink " + (done[i] ? "line-through" : "")}>{s.step}</h5>
               {s.detail && <p className="mt-1 text-sm text-ink/70">{s.detail}</p>}
               {!!(s.resources || []).length && (
                 <div className="mt-3 space-y-1.5">
@@ -239,6 +265,110 @@ function ProofTab({ result, profile }: { result: RunResult; profile: Profile | n
   );
 }
 
+/* ---------- Overview (synthesis + salary + cost) ---------- */
+
+function Stat({ label, value, small }: { label: string; value: any; small?: boolean }) {
+  return (
+    <div className="rounded-xl bg-black/[0.03] p-3">
+      <div className={(small ? "text-sm font-medium" : "font-display text-2xl") + " text-ink"}>{value}</div>
+      <div className="text-[11px] text-ink/50">{label}</div>
+    </div>
+  );
+}
+
+function OverviewTab({ r }: { r?: AgentResult }) {
+  if (!r?.ok) return <Empty msg="Overview unavailable." />;
+  const d = r.data || {};
+  const sal = d.salary || {};
+  return (
+    <div className="grid gap-5 lg:grid-cols-3">
+      <div className="card lg:col-span-2">
+        <h4 className="mb-2 flex items-center gap-2 font-display text-xl"><Sparkles className="h-5 w-5 text-marigold-500" /> Your journey at a glance</h4>
+        <p className="text-sm text-ink/75">{r.summary}</p>
+        <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+          <Stat label="Readiness" value={d.readiness != null ? `${d.readiness}%` : "—"} />
+          <Stat label="Live jobs" value={d.live_jobs ?? 0} />
+          <Stat label="Verdict" value={d.verdict || "—"} small />
+        </div>
+        <CitationRow citations={r.citations} />
+      </div>
+      <div className="card">
+        <h4 className="mb-2 flex items-center gap-2 font-display text-lg"><Wallet className="h-5 w-5 text-emerald-700" /> Salary &amp; cost</h4>
+        {sal.min && <p className="text-sm"><b>¥{Number(sal.min).toLocaleString()}–{Number(sal.max).toLocaleString()}</b> / month</p>}
+        {sal.note && <p className="text-xs text-ink/55">{sal.note}</p>}
+        {d.salary_note && <p className="mt-1 text-xs text-ink/45">{d.salary_note}</p>}
+        {!!(d.fees || []).length && (
+          <div className="mt-3 space-y-1.5 border-t border-black/[0.06] pt-3">
+            {d.fees.map((f: any, i: number) => (
+              <a key={i} href={f.url} target="_blank" rel="noreferrer" className="flex justify-between gap-2 text-xs text-ink/70 hover:text-sakura-600">
+                <span>{f.item}</span><span className="shrink-0 font-medium">{f.amount}</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Chat ---------- */
+
+function ChatTab({ profile }: { profile: Profile | null }) {
+  const [msgs, setMsgs] = useState<{ role: string; content: string; citations?: any[] }[]>([
+    { role: "assistant", content: "Ask me anything about your SSW journey — fees, family rules, salary, tests, sectors…" },
+  ]);
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs]);
+
+  async function send() {
+    if (!q.trim() || busy) return;
+    const question = q.trim();
+    setQ("");
+    const hist = msgs.filter((m) => m.role !== "system").map((m) => ({ role: m.role, content: m.content }));
+    setMsgs((m) => [...m, { role: "user", content: question }]);
+    setBusy(true);
+    try {
+      const res = await chat(question, profile, hist);
+      setMsgs((m) => [...m, { role: "assistant", content: res.answer, citations: res.citations }]);
+    } catch {
+      setMsgs((m) => [...m, { role: "assistant", content: "Sorry — I couldn't reach the assistant. Is the backend running?" }]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="card flex h-[520px] flex-col">
+      <h4 className="mb-3 flex items-center gap-2 font-display text-xl"><MessageCircle className="h-5 w-5 text-sakura-600" /> Ask Kakehashi</h4>
+      <div className="flex-1 space-y-3 overflow-auto pr-1">
+        {msgs.map((m, i) => (
+          <div key={i} className={"flex " + (m.role === "user" ? "justify-end" : "justify-start")}>
+            <div className={"max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm " + (m.role === "user" ? "bg-indigo-800 text-white" : "bg-black/[0.04] text-ink")}>
+              {m.content}
+              {!!(m.citations || []).length && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {m.citations!.slice(0, 3).map((c: any, k: number) => (
+                    <a key={k} href={c.url} target="_blank" rel="noreferrer" className="rounded bg-white/70 px-1.5 py-0.5 text-[10px] text-indigo-800 underline">{c.title}</a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        {busy && <div className="flex justify-start"><div className="rounded-2xl bg-black/[0.04] px-3.5 py-2.5"><Loader2 className="h-4 w-4 animate-spin text-ink/50" /></div></div>}
+        <div ref={endRef} />
+      </div>
+      <div className="mt-3 flex gap-2">
+        <input className="input flex-1" placeholder="e.g. How much is JFT-Basic? Can I bring my spouse?" value={q}
+          onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} />
+        <button className="btn-primary !px-4" onClick={send} disabled={busy}><Send className="h-4 w-4" /></button>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- shell ---------- */
 
 function Empty({ msg }: { msg: string }) {
@@ -246,28 +376,77 @@ function Empty({ msg }: { msg: string }) {
 }
 
 export function ResultsPanel({ result, profile }: { result: RunResult; profile: Profile | null }) {
-  const [tab, setTab] = useState("pathway");
+  const [tab, setTab] = useState("overview");
+  const [saving, setSaving] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const r = result.results;
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const { id } = await savePlan(result);
+      setShareUrl(`${window.location.origin}/?plan=${id}`);
+    } catch { setShareUrl("error"); } finally { setSaving(false); }
+  }
+  async function handlePdf() {
+    setPdfBusy(true);
+    try { await downloadDossier(result, profile); } catch {} finally { setPdfBusy(false); }
+  }
+  function copy() {
+    if (shareUrl && shareUrl !== "error") {
+      navigator.clipboard?.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  }
+
   const tabs = [
+    { id: "overview", label: "Overview", icon: <Home className="h-4 w-4" /> },
     { id: "pathway", label: "Pathway", icon: <MapPin className="h-4 w-4" /> },
     { id: "jobs", label: `Jobs (${r.jobs?.data?.jobs?.length ?? 0})`, icon: <Briefcase className="h-4 w-4" /> },
     { id: "procedure", label: "Procedure", icon: <FileText className="h-4 w-4" /> },
     { id: "study", label: "Study plan", icon: <GraduationCap className="h-4 w-4" /> },
     { id: "journey", label: "Journey", icon: <Plane className="h-4 w-4" /> },
     { id: "proof", label: "Proof", icon: <ShieldCheck className="h-4 w-4" /> },
+    { id: "chat", label: "Ask AI", icon: <MessageCircle className="h-4 w-4" /> },
   ];
 
   return (
     <div>
-      {/* trust banner */}
+      {/* trust banner + actions */}
       <div className="card mb-5 flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-indigo-800 to-sakura-600 text-white">
         <div>
           <p className="text-sm opacity-80">System trust score</p>
           <p className="font-display text-4xl">{Math.round(result.grounding_score * 100)}%</p>
           <p className="text-xs opacity-80">of agent answers grounded in official sources</p>
         </div>
-        <ShieldCheck className="h-12 w-12 opacity-80" />
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={handlePdf} disabled={pdfBusy}
+            className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-4 py-2.5 text-sm font-medium backdrop-blur transition hover:bg-white/25">
+            {pdfBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} PDF dossier
+          </button>
+          <button onClick={handleSave} disabled={saving}
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-800 transition hover:brightness-95">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />} Save &amp; share
+          </button>
+        </div>
       </div>
+
+      {shareUrl && (
+        <div className="card mb-5 flex flex-wrap items-center gap-2 text-sm">
+          {shareUrl === "error" ? (
+            <span className="text-red-600">Couldn&apos;t save — is the backend running?</span>
+          ) : (
+            <>
+              <span className="text-ink/60">Shareable link:</span>
+              <code className="truncate rounded bg-black/[0.05] px-2 py-1 text-xs">{shareUrl}</code>
+              <button onClick={copy} className="btn-ghost !py-1.5"><Copy className="h-3.5 w-3.5" /> {copied ? "Copied!" : "Copy"}</button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* tab bar */}
       <div className="mb-5 flex flex-wrap gap-1.5 rounded-2xl border border-black/[0.06] bg-white/70 p-1.5 backdrop-blur">
@@ -280,12 +459,14 @@ export function ResultsPanel({ result, profile }: { result: RunResult; profile: 
         ))}
       </div>
 
+      {tab === "overview" && <OverviewTab r={r.synthesis} />}
       {tab === "pathway" && <PathwayTab r={r.pathway} />}
       {tab === "jobs" && <JobsTab r={r.jobs} />}
       {tab === "procedure" && <ProcedureTab r={r.procedure} />}
       {tab === "study" && <StudyTab r={r.prep} />}
       {tab === "journey" && <JourneyRoadmap />}
       {tab === "proof" && <ProofTab result={result} profile={profile} />}
+      {tab === "chat" && <ChatTab profile={profile} />}
     </div>
   );
 }

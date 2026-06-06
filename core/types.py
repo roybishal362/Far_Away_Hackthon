@@ -25,6 +25,7 @@ class WorkerProfile:
     education: str = ""
     origin_city: str = "Delhi"
     target_city: str = "Tokyo"       # for jobs + flights
+    lang: str = "en"                 # output language: en | hi | ja
     languages: list[str] = field(default_factory=lambda: ["en"])
 
     def redacted(self) -> dict:

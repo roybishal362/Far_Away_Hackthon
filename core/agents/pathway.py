@@ -6,7 +6,7 @@ level / sector must get clearly different verdicts, gaps, readiness, and timelin
 """
 from __future__ import annotations
 
-from core.agents._common import gather, profile_text, used_citations
+from core.agents._common import gather, lang_directive, profile_text, used_citations
 from core.agents.base import Agent, AgentResult, ReasoningStep
 from core.knowledge_pack import NON_SSW_IT, is_it_sector
 from core.llm import LLMNotConfigured, get_llm
@@ -93,7 +93,7 @@ class PathwayAgent(Agent):
 
         user = (
             f"WORKER PROFILE (assess THIS person specifically):\n{profile_text(profile)}\n\n"
-            f"OFFICIAL CONTEXT:\n{ctx}\n\n{SCHEMA}"
+            f"OFFICIAL CONTEXT:\n{ctx}\n\n{SCHEMA}" + lang_directive(profile)
         )
         try:
             data = get_llm().json(SYSTEM, user, temperature=0.3)

@@ -4,7 +4,7 @@ personalized overview for THIS worker.
 """
 from __future__ import annotations
 
-from core.agents._common import profile_text
+from core.agents._common import lang_directive, profile_text
 from core.agents.base import Agent, AgentResult, ReasoningStep
 from core.knowledge_pack import PROCEDURE_STEPS, skills_test_for
 from core.llm import get_llm
@@ -43,7 +43,7 @@ class ProcedureAgent(Agent):
                 d = llm.json(
                     "You are an SSW procedures advisor. Write a concise, personalized 2-3 sentence overview of the "
                     "migration journey for THIS worker. Do NOT invent any URLs or step names.",
-                    f"Worker: {profile_text(profile)}\nTarget sector: {sector or 'open'}\nReturn JSON {{\"summary\": \"...\"}}",
+                    f"Worker: {profile_text(profile)}\nTarget sector: {sector or 'open'}\nReturn JSON {{\"summary\": \"...\"}}" + lang_directive(profile),
                     temperature=0.4,
                 )
                 summary = d.get("summary", "")

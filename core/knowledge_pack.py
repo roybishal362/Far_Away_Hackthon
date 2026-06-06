@@ -137,3 +137,41 @@ def skills_test_for(sector: str) -> dict | None:
         if t["sector"].lower().split()[0] in s or s.split("/")[0].strip() in t["sector"].lower():
             return t
     return None
+
+
+# --- Costs (real, India-specific where known) & salaries ---
+DATA_AS_OF = "June 2026"
+
+FEES: list[dict] = [
+    {"item": "JFT-Basic test (India)", "amount": "₹3,540", "url": "https://ac.prometric-jp.com/testlist/jfe/jftbasic_india.html"},
+    {"item": "JLPT N4 test (India)", "amount": "≈ ₹1,600", "url": "https://www.jlpt.jp/e/"},
+    {"item": "Sector skills evaluation test", "amount": "varies (≈ ₹3,000-6,000)", "url": "https://www.prometric-jp.com/en/ssw/exam/fee/"},
+    {"item": "Passport, medical check, flight & relocation", "amount": "≈ ₹50,000-80,000 one-time", "url": "https://www.in.emb-japan.go.jp/itpr_en/visa.html"},
+]
+
+# Monthly GROSS salary ranges (JPY). SSW law requires pay equal to a Japanese worker's.
+SALARIES: dict[str, dict] = {
+    "nursing care": {"min": 180000, "max": 250000, "note": "Start ~¥220k-240k; night/weekend shifts add more."},
+    "construction": {"min": 250000, "max": 280000, "note": "Among the highest-paying SSW sectors."},
+    "agriculture": {"min": 190000, "max": 210000, "note": "Employers often provide low-cost / free housing."},
+}
+SALARY_DEFAULT = {"min": 180000, "max": 250000, "note": "SSW pay must equal a Japanese worker's; varies by sector & region."}
+SALARY_NOTE = "~15-20% is deducted for income/resident tax, health insurance, pension and employment insurance."
+SALARY_SOURCES = [
+    {"name": "SSW salary by sector (Meihoku)", "url": "https://meihokutraining.com/article/ssw-job-salary-in-japan/"},
+    {"name": "Average salaries across SSW industries (SakuraPass)", "url": "https://www.sakurapass.com/en/work/salaries"},
+]
+
+DISCLAIMER = (
+    "Kakehashi gives guidance grounded in official sources — it is NOT legal or immigration advice. "
+    "Always verify current rules, fees, and dates with the official authorities (ISA, MOFA, Japan Foundation, "
+    f"Prometric). Information current as of {DATA_AS_OF}."
+)
+
+
+def salary_for(sector: str) -> dict:
+    s = (sector or "").lower()
+    for key, val in SALARIES.items():
+        if key.split()[0] in s:
+            return {**val, "sector": sector}
+    return {**SALARY_DEFAULT, "sector": sector}
