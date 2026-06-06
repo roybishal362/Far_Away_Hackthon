@@ -20,3 +20,6 @@ data/raw/
 .DS_Store
 .vscode/
 .idea/
+
+# Local push helper (no secret inside, but keep it out of the repo)
+push-to-github.ps1

@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Georgia", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-[#fbf9fb] text-ink antialiased;
+  background-image:
+    radial-gradient(60rem 60rem at 110% -10%, rgba(244, 63, 110, 0.06), transparent 50%),
+    radial-gradient(50rem 50rem at -10% 10%, rgba(43, 45, 110, 0.06), transparent 50%);
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+  .card {
+    @apply rounded-2xl border border-black/[0.06] bg-white/80 p-6 shadow-card backdrop-blur;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sakura-600 to-marigold-500
+           px-5 py-3 font-semibold text-white shadow-glow transition
+           hover:brightness-105 active:scale-[.98] disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white
+           px-4 py-2.5 font-medium text-ink transition hover:bg-black/[0.03];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-sakura-50 px-3 py-1 text-xs font-medium text-sakura-600;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink/70;
+  }
+  .input {
+    @apply w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-ink outline-none
+           transition focus:border-sakura-500 focus:ring-2 focus:ring-sakura-500/20;
+  }
+}
+
+/* Gradient text for the wordmark */
+.text-bridge {
+  @apply bg-gradient-to-r from-indigo-800 via-sakura-600 to-marigold-500 bg-clip-text text-transparent;
+}

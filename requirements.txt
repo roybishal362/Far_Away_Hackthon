@@ -1,15 +1,24 @@
-# Core MVP stack — lower-bound pins so Streamlit Cloud resolves cleanly on Linux.
-streamlit>=1.40
-numpy>=2.0
-pandas>=2.2
-scikit-learn>=1.5
-scipy>=1.13
-matplotlib>=3.8
+# Kakehashi backend — lean runtime deps (verified on Python 3.14, Streamlit Cloud-safe).
 
-# --- Expansion slots (uncomment when a theme needs them) ---
-# torch                 # deep learning
-# transformers          # HuggingFace pretrained models
-# sentence-transformers # embeddings / semantic search
-# openai                # hosted LLM API
-# anthropic             # hosted Claude API
-# plotly                # richer interactive charts
+# API
+fastapi>=0.110
+uvicorn[standard]>=0.27
+
+# LLM brain (Groq — free, fast, OpenAI-compatible)
+groq>=0.11
+
+# Real-data tools
+requests>=2.31
+beautifulsoup4>=4.12   # parse official SSW/MOFA pages
+
+# RAG grounding (pure-python keyword retrieval — reliable on any host)
+rank-bm25>=0.2.2
+
+# Security
+cryptography>=42.0     # Fernet/AES encryption-at-rest
+
+# Config
+python-dotenv>=1.0     # load .env for local dev
+
+# --- added in later rounds ---
+# reportlab          # Migration Dossier PDF export (Round 2)
