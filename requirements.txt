@@ -1,0 +1,15 @@
+# Core MVP stack — lower-bound pins so Streamlit Cloud resolves cleanly on Linux.
+streamlit>=1.40
+numpy>=2.0
+pandas>=2.2
+scikit-learn>=1.5
+scipy>=1.13
+matplotlib>=3.8
+
+# --- Expansion slots (uncomment when a theme needs them) ---
+# torch                 # deep learning
+# transformers          # HuggingFace pretrained models
+# sentence-transformers # embeddings / semantic search
+# openai                # hosted LLM API
+# anthropic             # hosted Claude API
+# plotly                # richer interactive charts
