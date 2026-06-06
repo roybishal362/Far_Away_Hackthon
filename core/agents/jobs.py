@@ -51,7 +51,7 @@ class JobsAgent(Agent):
         sector = _sector(context, profile)
         keyword = _keyword(sector, profile)
         steps = [ReasoningStep(f"Searching live jobs for '{keyword}' (sector: {sector})", kind="tool_call")]
-        result = self.tool.run(query=keyword, location="Japan", limit=8)
+        result = self.tool.run(query=keyword, location="Japan", limit=25, num_pages=2)
 
         if not result.ok:
             steps.append(ReasoningStep("Jobs source unavailable", result.error or "", kind="tool_result"))

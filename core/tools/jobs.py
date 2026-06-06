@@ -34,7 +34,7 @@ class JobsTool(Tool):
     def available(self) -> bool:
         return bool(SETTINGS.jsearch_api_key)
 
-    def run(self, query: str, location: str = "Japan", limit: int = 10) -> ToolResult:  # type: ignore[override]
+    def run(self, query: str, location: str = "Japan", limit: int = 20, num_pages: int = 2) -> ToolResult:  # type: ignore[override]
         if not self.available():
             return ToolResult.unconfigured(self.name, "JSEARCH_API_KEY")
 
@@ -42,8 +42,8 @@ class JobsTool(Tool):
             r = requests.get(
                 JSEARCH_URL,
                 headers={"x-api-key": SETTINGS.jsearch_api_key},
-                params={"query": f"{query} in {location}", "country": "jp", "page": "1", "num_pages": "1"},
-                timeout=25,
+                params={"query": f"{query} in {location}", "country": "jp", "page": "1", "num_pages": str(num_pages)},
+                timeout=30,
             )
             r.raise_for_status()
             payload = r.json()

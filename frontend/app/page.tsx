@@ -8,7 +8,6 @@ import { Hero } from "@/components/Hero";
 import { IntakeForm } from "@/components/IntakeForm";
 import { AgentTimeline } from "@/components/AgentTimeline";
 import { ResultsPanel } from "@/components/Results";
-import { ProofDashboard } from "@/components/ProofDashboard";
 
 const PRIVACY = [
   { icon: <Database className="h-4 w-4" />, t: "Data minimization", d: "Only the fields you enter; no account, no tracking." },
@@ -58,9 +57,8 @@ export default function Page() {
         )}
 
         {result && (
-          <div className="mt-10 space-y-10">
-            <ResultsPanel result={result} />
-            <ProofDashboard profile={profile} />
+          <div className="mt-10">
+            <ResultsPanel result={result} profile={profile} />
           </div>
         )}
       </section>

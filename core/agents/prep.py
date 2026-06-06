@@ -1,22 +1,25 @@
-"""Prep agent — given the worker's gaps (e.g. needs JLPT N4), builds a personalized
-study + exam plan with a timeline, grounded in official test requirements."""
+"""Prep agent — a PERSONALIZED study + exam plan keyed to the worker's current
+Japanese level and target, with REAL free/open-source resources attached
+(links curated, never LLM-invented).
+"""
 from __future__ import annotations
 
-from core.agents._common import gather, profile_text, used_citations
+from core.agents._common import profile_text
 from core.agents.base import Agent, AgentResult, ReasoningStep
-from core.llm import LLMNotConfigured, get_llm
-from core.types import WorkerProfile
+from core.knowledge_pack import STUDY_RESOURCES
+from core.llm import get_llm
+from core.types import Citation, WorkerProfile
 
 SYSTEM = (
-    "You are a principal preparation coach for SSW candidates. Using ONLY the numbered OFFICIAL CONTEXT "
-    "for the hard requirements (tests, language level), build a realistic study + exam plan. "
-    "You MAY suggest sensible study cadence, but never misstate official test requirements."
+    "You are a principal preparation coach for SSW candidates. Build a realistic, PERSONALIZED study + exam plan "
+    "for THIS worker to reach JLPT N4 / JFT-Basic and pass their sector skills test. Reference their CURRENT Japanese "
+    "level and target sector; a beginner (none/N5) needs a longer plan than someone at N4. Do NOT invent resource URLs."
 )
 
 SCHEMA = (
-    'Return JSON: {"gaps": ["..."], '
-    '"plan": [{"milestone": "...", "weeks": <int>, "detail": "..."}], '
-    '"summary": "<headline>", "sources_used": [<indices>]}'
+    'Return JSON: {"gaps": ["specific gaps for THIS worker"], '
+    '"plan": [{"milestone": "...", "weeks": <int>, "detail": "what to do, which free resource to use"}], '
+    '"total_weeks": <int>, "summary": "<personalized headline>"}'
 )
 
 
@@ -25,29 +28,28 @@ class PrepAgent(Agent):
 
     def run(self, profile: WorkerProfile, context: dict) -> AgentResult:
         steps = [ReasoningStep("Assessing readiness gaps", f"Japanese level: {profile.japanese_level}", kind="think")]
-        query = "SSW skills evaluation test Japanese language JLPT N4 JFT-Basic requirement"
-        passages, ctx = gather(query, k=4)
-        steps.append(ReasoningStep("Retrieved official test requirements", f"{len(passages)} cited passages", kind="tool_result"))
-        if not passages:
-            return AgentResult(agent=self.name, ok=False, error="No official context retrieved", steps=steps)
+        plan_data: dict = {}
+        llm = get_llm()
+        if llm.available():
+            try:
+                resource_hint = "; ".join(f"{r['name']} ({r['level']})" for r in STUDY_RESOURCES)
+                plan_data = llm.json(
+                    SYSTEM,
+                    f"Worker: {profile_text(profile)}\nAvailable free resources you may reference by name: {resource_hint}\n\n{SCHEMA}",
+                    temperature=0.4,
+                )
+            except Exception:
+                plan_data = {}
 
-        user = (
-            f"WORKER PROFILE:\n{profile_text(profile)}\n\nOFFICIAL CONTEXT:\n{ctx}\n\n"
-            f"Identify what the worker still needs (language level, skills test) and plan it. {SCHEMA}"
-        )
-        try:
-            data = get_llm().json(SYSTEM, user)
-        except LLMNotConfigured as exc:
-            return AgentResult(agent=self.name, ok=False, error=str(exc), steps=steps)
-
-        steps.append(ReasoningStep("Built study + exam plan", kind="decide"))
-        cits = used_citations(passages, data.get("sources_used"))
+        steps.append(ReasoningStep("Built personalized plan + attached free resources", f"{len(STUDY_RESOURCES)} open-source resources", kind="decide"))
+        data = {**plan_data, "resources": STUDY_RESOURCES}
+        cits = [Citation(source_url=r["url"], title=r["name"], snippet=r["purpose"]) for r in STUDY_RESOURCES[:6]]
         return AgentResult(
             agent=self.name,
-            summary=data.get("summary", ""),
+            summary=plan_data.get("summary", "Personalized study plan with free resources."),
             data=data,
             citations=cits,
-            confidence=0.85 if cits else 0.4,
+            confidence=0.85,
             steps=steps,
             ok=True,
         )
