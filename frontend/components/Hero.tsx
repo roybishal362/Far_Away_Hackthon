@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 
 const STATS = [
   { value: "50,000", label: "Indian workers → Japan (2025 pact)" },
@@ -58,8 +58,8 @@ export function Hero() {
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
-            <a href="#start" className="btn-primary">
-              Build my migration plan <ArrowDown className="h-4 w-4" />
+            <a href="/app" className="btn-primary">
+              Build my migration plan <ArrowRight className="h-4 w-4" />
             </a>
             <span className="inline-flex items-center gap-2 text-sm text-ink/60">
               <ShieldCheck className="h-4 w-4 text-emerald-600" /> Real data only — never fabricated

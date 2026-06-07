@@ -1,80 +1,97 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { Lock, Database, EyeOff, FileCheck2 } from "lucide-react";
-import { streamRun, loadPlan } from "@/lib/api";
-import { Profile, RunResult, StepEvent } from "@/lib/types";
+import Link from "next/link";
+import {
+  ArrowRight, ShieldCheck, Globe, FileText, Briefcase, GraduationCap,
+  MessageCircle, MapPin, Database, Lock, EyeOff, FlaskConical,
+} from "lucide-react";
 import { Hero } from "@/components/Hero";
-import { IntakeForm } from "@/components/IntakeForm";
-import { AgentTimeline } from "@/components/AgentTimeline";
-import { ResultsPanel } from "@/components/Results";
 
-const PRIVACY = [
-  { icon: <Database className="h-4 w-4" />, t: "Data minimization", d: "Only the fields you enter; no account, no tracking." },
-  { icon: <Lock className="h-4 w-4" />, t: "Encrypted at rest", d: "Any stored profile uses AES (Fernet)." },
-  { icon: <EyeOff className="h-4 w-4" />, t: "No PII in logs", d: "Profiles are redacted to coarse signals before logging." },
-  { icon: <FileCheck2 className="h-4 w-4" />, t: "Official sources", d: "Every claim links to ssw.go.jp / MOFA." },
+const STEPS = [
+  { n: 1, t: "Tell us about you", d: "Skills, experience, Japanese level — or just upload your resume. Choose EN / हिन्दी / 日本語." },
+  { n: 2, t: "Agents go to work", d: "Specialized AI agents read official Japanese sources and live job data, citing every claim — you watch them think live." },
+  { n: 3, t: "Get a real, proven plan", d: "Eligibility, real jobs ranked to you, step-by-step with official links, a study plan, and costs — save, share, or download as PDF." },
 ];
 
-export default function Page() {
-  const [steps, setSteps] = useState<StepEvent[]>([]);
-  const [result, setResult] = useState<RunResult | null>(null);
-  const [running, setRunning] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+const FEATURES = [
+  { icon: <MapPin className="h-5 w-5" />, t: "Personalized pathway", d: "A verdict, readiness score and gap analysis built from your actual profile — IT/office roles auto-routed to the right visa." },
+  { icon: <Briefcase className="h-5 w-5" />, t: "Real live jobs", d: "Actual openings in Japan, ranked by fit to you with a reason — not mock data." },
+  { icon: <FileText className="h-5 w-5" />, t: "Step-by-step with real links", d: "Every step links to the official site (ISA, JFT-Basic, Prometric, JLPT…) and what it's for." },
+  { icon: <GraduationCap className="h-5 w-5" />, t: "Study plan + free resources", d: "A plan keyed to your Japanese level, with free open-source materials (Irodori, JLPT, NHK Easy…)." },
+  { icon: <FlaskConical className="h-5 w-5" />, t: "Proof, not claims", d: "A built-in ablation measures grounded vs. ungrounded accuracy and hallucinations." },
+  { icon: <MessageCircle className="h-5 w-5" />, t: "Ask anything", d: "A grounded chat answers your follow-ups with citations — in your language." },
+];
 
-  // Load a shared plan if the URL has ?plan=<id>
-  useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("plan");
-    if (id) loadPlan(id).then(setResult).catch(() => {});
-  }, []);
+const TRUST = [
+  { icon: <Database className="h-4 w-4" />, t: "Real or nothing", d: "Every fact is from a real API or a cited official document — never fabricated." },
+  { icon: <Lock className="h-4 w-4" />, t: "Encrypted at rest", d: "Any saved profile uses AES (Fernet)." },
+  { icon: <EyeOff className="h-4 w-4" />, t: "No PII in logs", d: "Profiles are redacted to coarse signals before logging." },
+  { icon: <Globe className="h-4 w-4" />, t: "EN / हिन्दी / 日本語", d: "Content and chat in your language." },
+];
 
-  async function handleRun(p: Profile) {
-    setProfile(p);
-    setSteps([]);
-    setResult(null);
-    setError(null);
-    setRunning(true);
-    try {
-      await streamRun(p, {
-        onStep: (s) => setSteps((prev) => [...prev, s]),
-        onResult: (r) => setResult(r),
-        onError: (e) => setError(e.message),
-      });
-    } catch (e: any) {
-      setError(e.message ?? "Connection failed — is the API running on :8000?");
-    } finally {
-      setRunning(false);
-    }
-  }
+function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <section className={"container-app mt-20 " + className}>{children}</section>;
+}
 
+export default function Landing() {
   return (
-    <main className="min-h-screen pb-24">
+    <main>
       <Hero />
 
-      <section id="start" className="container-app mt-6 scroll-mt-8">
-        <div className="grid items-start gap-6 lg:grid-cols-2">
-          <IntakeForm onRun={handleRun} loading={running} />
-          <AgentTimeline steps={steps} running={running} />
+      {/* How it works */}
+      <Section>
+        <h2 className="font-display text-3xl">How it works</h2>
+        <p className="mt-1 text-ink/60">From "where do I start?" to a real, proven plan — in one run.</p>
+        <div className="mt-6 grid gap-5 md:grid-cols-3">
+          {STEPS.map((s) => (
+            <div key={s.n} className="card">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-sakura-600 to-marigold-500 font-display text-lg text-white">{s.n}</div>
+              <h3 className="mt-3 font-display text-xl">{s.t}</h3>
+              <p className="mt-1 text-sm text-ink/65">{s.d}</p>
+            </div>
+          ))}
         </div>
+      </Section>
 
-        {error && (
-          <div className="card mt-6 border-red-200 bg-red-50 text-sm text-red-700">⚠️ {error}</div>
-        )}
-
-        {result && (
-          <div className="mt-10">
-            <ResultsPanel result={result} profile={profile} />
+      {/* Impact */}
+      <Section>
+        <div className="card bg-gradient-to-br from-indigo-800 to-sakura-600 text-white">
+          <h2 className="font-display text-3xl">Why this matters</h2>
+          <p className="mt-2 max-w-3xl text-white/85">
+            In August 2025, India and Japan signed a pact to move <b>50,000 skilled Indian workers</b> to Japan, which
+            faces a deep labour shortage. But the journey — visa, the JLPT N4 language bar, skills tests, paperwork,
+            job matching — is a confusing, months-long maze. Kakehashi is the autonomous guide through it, serving
+            <b> both governments</b>: India sends workers, Japan fills its gap.
+          </p>
+          <div className="mt-6 grid grid-cols-3 gap-4">
+            {[["50,000", "Indian workers → Japan (2025 pact)"], ["19", "eligible SSW sectors"], ["0", "hallucinations (grounded)"]].map(([v, l]) => (
+              <div key={l} className="rounded-xl bg-white/10 p-4">
+                <div className="font-display text-3xl">{v}</div>
+                <div className="mt-1 text-xs text-white/75">{l}</div>
+              </div>
+            ))}
           </div>
-        )}
-      </section>
+        </div>
+      </Section>
 
-      {/* Privacy / trust */}
-      <section className="container-app mt-16">
+      {/* Features */}
+      <Section>
+        <h2 className="font-display text-3xl">Everything in one place</h2>
+        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f) => (
+            <div key={f.t} className="card">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sakura-50 text-sakura-600">{f.icon}</div>
+              <h3 className="mt-3 font-display text-lg">{f.t}</h3>
+              <p className="mt-1 text-sm text-ink/65">{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Trust */}
+      <Section>
         <div className="card">
-          <h3 className="font-display text-2xl">Private &amp; trustworthy by design</h3>
+          <h2 className="flex items-center gap-2 font-display text-2xl"><ShieldCheck className="h-6 w-6 text-emerald-600" /> Private &amp; trustworthy by design</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {PRIVACY.map((p) => (
+            {TRUST.map((p) => (
               <div key={p.t} className="rounded-xl bg-black/[0.02] p-4">
                 <div className="flex items-center gap-2 text-ink">{p.icon}<span className="font-medium">{p.t}</span></div>
                 <p className="mt-1 text-xs text-ink/55">{p.d}</p>
@@ -82,16 +99,16 @@ export default function Page() {
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      <footer className="container-app mt-16 text-center text-sm text-ink/40">
-        <p className="font-display text-lg text-bridge">Kakehashi 架け橋</p>
-        <p className="mt-1">A bridge between India and Japan · FAR AWAY 2026 · Agentic &amp; Autonomous Systems</p>
-        <p className="mx-auto mt-4 max-w-2xl text-xs text-ink/35">
-          ⚠️ Guidance grounded in official sources — not legal or immigration advice. Always verify current rules,
-          fees, and dates with the official authorities (ISA, MOFA, Japan Foundation, Prometric). Information current as of June 2026.
-        </p>
-      </footer>
+      {/* CTA */}
+      <Section>
+        <div className="card flex flex-col items-center gap-4 py-12 text-center">
+          <h2 className="font-display text-3xl">Ready to find your path to Japan?</h2>
+          <p className="max-w-xl text-ink/65">Free, grounded in official sources, and personalized to you in minutes.</p>
+          <Link href="/app" className="btn-primary text-base">Build my migration plan <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </Section>
     </main>
   );
 }
