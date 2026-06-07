@@ -1,73 +1,148 @@
-# 🌉 Kakehashi (架け橋) — an autonomous AI bridge for Indian workers to Japan
+<div align="center">
 
-> **FAR AWAY 2026 · Theme: Agentic & Autonomous Systems**
-> A source-grounded multi-agent system that guides Indian skilled workers through Japan's
-> **Specified Skilled Worker (SSW)** journey — *every answer cited from official sources, every claim measured.*
+# 🌉 Kakehashi (架け橋)
 
-Built on the real **Aug-2025 India–Japan Human Resource Exchange Partnership** (50,000 Indian
-workers → Japan) and the **India–Japan AI Cooperation Initiative** ("AI talent mobility",
-"trustworthy AI"). It helps **both** governments: India sends workers, Japan fills its labor shortage.
+### An autonomous AI bridge for Indian workers to Japan
+
+**FAR AWAY 2026 · Theme: Agentic & Autonomous Systems**
+
+*A source-grounded multi-agent system that guides Indian skilled workers through Japan's
+Specified Skilled Worker (SSW) journey — every answer cited from official sources, every claim measured.*
+
+`Real data, not mockups` · `Cited, not hallucinated` · `Proven, not claimed` · `EN / हिन्दी / 日本語`
+
+</div>
 
 ---
 
-## Why it's different
-- **Real or nothing.** Every tool returns real data or honestly says "not configured" — it *cannot* fabricate (enforced in the type system). Live jobs come from a real jobs API; SSW rules are grounded in official `ssw.go.jp` / MOFA pages with citations.
-- **Proven, not claimed.** A built-in ablation measures our grounded agents vs. a plain LLM:
-  **accuracy 14% → 71%, hallucinations 6 → 0** (against a gold set of official facts).
-- **Autonomous multi-agent.** 5 specialized agents (Pathway · Jobs · Procedure · Prep · Journey) orchestrated, each reasoning + calling a real tool + citing sources, streamed live to the UI.
+## 🎯 The problem (why we built this)
 
-## Architecture
+In **August 2025**, India and Japan signed a Human Resource Exchange Partnership to move **50,000 skilled
+Indian workers** to Japan — which faces a severe labour shortage (300,000+ caregivers short by 2035). Both
+governments named **AI talent mobility** and **trustworthy AI** as the way to make it happen.
+
+But for an actual worker, the journey is a months-long maze: *Which visa? Am I even eligible? The JLPT N4
+language bar, sector skills tests, immigration paperwork, finding a real employer, the cost, the relocation…*
+The information is scattered across Japanese government sites, and the gap is filled by middlemen and
+misinformation.
+
+**Kakehashi is the autonomous guide through that maze — serving both governments at once:** India sends
+workers, Japan fills its shortage, and the worker gets a cited, personalized, honest plan.
+
+## 🌉 What it does
+
+You tell Kakehashi about yourself (or upload your resume). A team of **autonomous agents** then:
+- determines the **right visa pathway** for *you* (and correctly reroutes IT/office roles off SSW),
+- pulls **real live jobs** in Japan and ranks them by fit,
+- lays out the **official step-by-step procedure** with the real government link for every step,
+- builds a **personalized study plan** with free resources,
+- estimates **salary and cost**, and
+- answers your **follow-up questions** in a grounded chat — in your language.
+
+…then you can **save, share, or download** the whole thing as a PDF "Migration Dossier."
+
+## ✨ Why it's different — three pillars
+
+1. **Real or nothing.** Every tool returns real data or *honestly says it's not configured* — it physically
+   cannot fabricate. Jobs are real live listings; SSW rules are grounded in official `ssw.go.jp` / MOFA pages
+   with a citation on every claim.
+2. **Proven, not claimed.** A built-in ablation measures our grounded agents vs. a plain LLM:
+   **accuracy ≈14% → ≈71%, hallucinations ≈6 → 0** against a gold set of official facts. The proof is a number.
+3. **Genuinely autonomous.** 6 specialized agents reason → call a real tool → cite → score confidence, and the
+   orchestrator **adapts the plan to you** (e.g. an IT worker is routed to the Engineer visa and the SSW-only
+   steps are skipped automatically). Most "agentic" demos are a single prompt wrapper — this isn't.
+
+## 🧠 Architecture
+
 ```
-frontend/         Next.js 14 + TS + Tailwind + Framer Motion (polished product UI)
-   └─ talks to ─▶ FastAPI (api/) ── SSE stream of the live agent timeline
-api/main.py       /run, /run/stream (SSE), /eval, /health
-core/             UI-agnostic brain (swap the UI without touching this)
-  engine.py       orchestrates agents, computes the Source-Grounding Score
-  agents/         pathway · jobs · procedure · prep · journey
-  tools/          real-data clients: jobs (JSearch), estat (gov stats), flights (Amadeus)
-  rag/            official SSW facts, BM25-retrieved, every passage cited
-  eval/           gold checklist + grounded-vs-ungrounded ablation (the proof)
-  security/       AES/Fernet encryption-at-rest
-config.py         loads keys from .env / secrets; honest no-key degradation
+frontend/ (Next.js 14 · TS · Tailwind · Framer Motion)    ← multi-page product (Home / How / App)
+   └── talks to ─▶ FastAPI (api/) ── SSE live agent timeline
+core/  (UI-agnostic Python brain)
+  engine.py     orchestrates agents, adapts the plan, computes the grounding score
+  agents/       pathway · jobs · procedure · prep · journey · synthesis
+  tools/        real-data clients: jobs (JSearch), e-Stat (gov stats), flights (Amadeus)
+  rag/          official SSW facts, BM25-retrieved, every passage cited
+  eval/         gold checklist + grounded-vs-ungrounded ablation (the proof)
+  chat.py       grounded follow-up Q&A   ·   security/  AES-Fernet encryption
+config.py       loads keys from env/secrets; honest no-key degradation
 ```
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
 
-## Run it locally
+| Agent | What it does | Real tool |
+|---|---|---|
+| 🧭 **Pathway** | Classifies the correct visa (SSW / Engineer / Specialist) + a personalized verdict, readiness score & gaps | SSW-RAG (cited) |
+| 💼 **Jobs** | Fetches real live openings, ranks each by fit to you | JSearch API |
+| 📄 **Procedure** | The official ordered journey, each step with the real gov link | SSW-RAG |
+| 📚 **Prep** | A study + exam plan keyed to your Japanese level + free resources | official test info |
+| 🗓️ **Journey** | Flights, cost & timeline | Amadeus (roadmap) |
+| ✨ **Synthesis** | Your warm personal overview + salary + cost | gov salary data |
 
-### 1) Backend (Python 3.12+)
-> On Windows use **`py`** (the launcher); plain `python` may hit the Microsoft Store alias.
-```powershell
+## 📊 The proof (Proof tab)
+
+`POST /eval` runs the same question two ways and scores both against a gold set of official SSW facts:
+
+| | Accuracy | Hallucinations |
+|---|---|---|
+| **Our grounded agents** | ≈ 71% | **0** |
+| Plain LLM (ungrounded) | ≈ 14% | 6 |
+
+*Grounding takes accuracy 14% → 71% and cuts hallucinations to zero. That gap is the evidence.*
+
+## 🔌 Real data sources
+
+| Need | Source | Type |
+|---|---|---|
+| SSW rules & procedures | Official **ssw.go.jp** (ISA) + **MOFA** | grounded & cited (RAG) |
+| Live job openings | **JSearch** (real-time) | REST API |
+| Government labour statistics | **Japan e-Stat** | official gov API |
+| Exam fees / salaries | Prometric, JLPT, JFT + sourced research | cited |
+| Flights | **Amadeus** | API (roadmap) |
+
+## 🖥️ The product
+
+A real multi-page site: **Home** (the story + impact), **How it works** (the agentic depth, for judges),
+and **Build my plan** (the tool) with tabs for **Overview · Pathway · Jobs · Procedure · Study plan ·
+Journey · Proof · Ask AI**, plus persona quick-starts, resume auto-fill, save/share links, PDF export,
+a progress checklist, and a privacy panel.
+
+## 🌐 Multilingual · 🔐 Private by design
+- Content **and** chat in **English / हिन्दी / 日本語** (the finale is in Japan 🇯🇵).
+- Real or nothing · AES-Fernet encryption at rest · no PII in logs · disclaimer (not legal advice).
+
+## 🗺️ Real vs. roadmap (we're honest about both)
+| Live now | Roadmap |
+|---|---|
+| Pathway, Jobs (real), Procedure, Prep, Synthesis, Chat, Proof, save/share, PDF, EN/HI/JA | Amadeus flights (paid tier), e-Stat "Demand" charts, recruiter-scam detection |
+
+## 🛠️ Tech stack
+**Frontend:** Next.js 14, TypeScript, Tailwind, Framer Motion, Recharts ·
+**Backend:** FastAPI, SSE · **LLM:** Groq `gpt-oss-120b` (multilingual) ·
+**RAG:** BM25 · **Security:** cryptography (Fernet)
+
+## ▶️ Run locally
+> Windows: use `py` (the launcher), not `python`.
+
+**Backend** (Python 3.12+):
+```bash
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-# create .env (see below), then start the server:
+# create .env (see .env keys below), then:
 .\.venv\Scripts\python.exe -m uvicorn api.main:app --reload --port 8000
 ```
-Check it: open http://localhost:8000/health
-
-### 2) Frontend (Node.js 18+)
-```powershell
-cd frontend
-npm install
+**Frontend** (Node 18+):
+```bash
+cd frontend && npm install
 copy .env.local.example .env.local   # NEXT_PUBLIC_API_URL=http://localhost:8000
-npm run dev
+npm run dev      # http://localhost:3000
 ```
-Open http://localhost:3000
+**`.env` keys** (free): `GROQ_API_KEY` (console.groq.com) · `JSEARCH_API_KEY` (OpenWeb Ninja) ·
+`ESTAT_APP_ID` (e-stat.go.jp). The app degrades honestly without any key.
 
-### `.env` (backend, gitignored — never commit)
-```
-GROQ_API_KEY=...            # console.groq.com (free) — the agents' brain
-JSEARCH_API_KEY=...         # OpenWeb Ninja JSearch (free tier) — live jobs
-ESTAT_APP_ID=...            # e-stat.go.jp (free) — gov labor statistics
-# AMADEUS_CLIENT_ID/SECRET  # flights — Round 2 (paid tier)
-```
+## 📜 More
+[ARCHITECTURE.md](ARCHITECTURE.md) · [DEPLOY.md](DEPLOY.md) · smoke tests in `scripts/`.
 
-## Proof / evaluation
-`POST /eval` (or the "Run ablation" button) runs the same question two ways and scores both
-against a gold set of official SSW facts. The gap *is* the evidence that grounding works.
+<div align="center">
 
-## Status
-- ✅ Round 1: agents, RAG grounding, real jobs + gov stats, ablation proof, FastAPI + Next.js UI.
-- 🔜 Round 2: Amadeus flights, more sectors, PDF dossier export, multilingual (EN/HI/JA).
+**Kakehashi 架け橋 — a bridge between India and Japan.**
+Built for FAR AWAY 2026 · Agentic & Autonomous Systems
 
----
-*Smoke tests: `python scripts/smoke.py` (full pipeline) · `python scripts/eval_smoke.py` (ablation).*
+</div>
