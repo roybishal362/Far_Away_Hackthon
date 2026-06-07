@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { streamRun, loadPlan } from "@/lib/api";
 import { Profile, RunResult, StepEvent } from "@/lib/types";
 import { IntakeForm } from "@/components/IntakeForm";
@@ -13,14 +13,24 @@ export default function AppPage() {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Load a shared plan if the URL has ?plan=<id>
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("plan");
-    if (id) loadPlan(id).then(setResult).catch(() => {});
+    if (id) {
+      loadPlan(id)
+        .then(({ result, profile }) => { setResult(result); setProfile(profile); })
+        .catch(() => setError("This shared plan has expired or wasn't found. Build a fresh one below."));
+    }
   }, []);
 
   async function handleRun(p: Profile) {
+    // Cancel any in-flight run so rapid clicks / language switches don't interleave.
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setProfile(p);
     setSteps([]);
     setResult(null);
@@ -28,14 +38,16 @@ export default function AppPage() {
     setRunning(true);
     try {
       await streamRun(p, {
-        onStep: (s) => setSteps((prev) => [...prev, s]),
-        onResult: (r) => setResult(r),
-        onError: (e) => setError(e.message),
-      });
+        onStep: (s) => { if (!controller.signal.aborted) setSteps((prev) => [...prev, s]); },
+        onResult: (r) => { if (!controller.signal.aborted) setResult(r); },
+        onError: (e) => { if (!controller.signal.aborted) setError(e.message); },
+      }, controller.signal);
     } catch (e: any) {
-      setError(e.message ?? "Connection failed — is the API running on :8000?");
+      if (e?.name !== "AbortError" && !controller.signal.aborted) {
+        setError(e?.message ?? "Connection failed — is the API running on :8000?");
+      }
     } finally {
-      setRunning(false);
+      if (abortRef.current === controller) setRunning(false);
     }
   }
 

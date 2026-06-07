@@ -51,6 +51,12 @@ const DEFAULTS: Profile = {
   resume_text: "",
 };
 
+const PERSONAS: { label: string; p: Profile }[] = [
+  { label: "👩‍⚕️ Priya · Nurse", p: { ...DEFAULTS, skills: "nursing, 3 years hospital ICU", sector_interest: "Nursing Care", years_experience: 3, japanese_level: "none", education: "B.Sc Nursing", origin_city: "Delhi" } },
+  { label: "👨‍💻 Arjun · Software Eng", p: { ...DEFAULTS, skills: "software developer, Python, 4 years", sector_interest: "Software / IT / Engineering", years_experience: 4, japanese_level: "N4", education: "B.Tech CSE", origin_city: "Bengaluru" } },
+  { label: "🧑‍💼 Meera · HR/Recruiter", p: { ...DEFAULTS, skills: "HR generalist, recruiting, 5 years", sector_interest: "Human Resources", years_experience: 5, japanese_level: "N5", education: "MBA (HR)", origin_city: "Mumbai", target_city: "Osaka" } },
+];
+
 export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; loading: boolean }) {
   const [p, setP] = useState<Profile>(DEFAULTS);
   const [choice, setChoice] = useState("Nursing Care");
@@ -79,6 +85,14 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
     }
   }
 
+  function usePersona(per: { p: Profile }) {
+    setP(per.p);
+    setChoice(SECTORS.includes(per.p.sector_interest) ? per.p.sector_interest : "Other (custom)");
+    onRun(per.p);
+  }
+
+  const valid = p.skills.trim().length > 0 && (choice !== "Other (custom)" || p.sector_interest.trim().length > 0);
+
   return (
     <form onSubmit={(e) => { e.preventDefault(); onRun(p); }} className="card">
       <div className="flex items-start justify-between gap-3">
@@ -99,6 +113,18 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
         </div>
       </div>
 
+      <div className="mt-4">
+        <p className="mb-2 text-xs font-medium text-ink/50">Try a sample (one click):</p>
+        <div className="flex flex-wrap gap-2">
+          {PERSONAS.map((per, i) => (
+            <button key={i} type="button" disabled={loading} onClick={() => usePersona(per)}
+              className="rounded-full border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-ink/70 transition hover:border-sakura-300 hover:bg-sakura-50/50 disabled:opacity-50">
+              {per.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-black/15 p-3 transition hover:border-sakura-300 hover:bg-sakura-50/40">
         <input type="file" accept=".pdf,.txt" className="hidden" onChange={onResume} />
         {parsing ? <Loader2 className="h-5 w-5 animate-spin text-sakura-600" /> : <Upload className="h-5 w-5 text-sakura-600" />}
@@ -109,7 +135,7 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="label">Skills &amp; experience</label>
-          <textarea className="input min-h-[72px]" value={p.skills}
+          <textarea className="input min-h-[72px]" value={p.skills} maxLength={400}
             onChange={(e) => set("skills", e.target.value)} placeholder="e.g. nursing, 3 years hospital experience" />
         </div>
 
@@ -122,7 +148,7 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
         {choice === "Other (custom)" && (
           <div>
             <label className="label">Your sector</label>
-            <input className="input" value={p.sector_interest}
+            <input className="input" value={p.sector_interest} maxLength={80}
               onChange={(e) => set("sector_interest", e.target.value)} placeholder="Type your field" />
           </div>
         )}
@@ -130,7 +156,7 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
         <div>
           <label className="label">Years of experience</label>
           <input type="number" min={0} step={0.5} className="input" value={p.years_experience}
-            onChange={(e) => set("years_experience", Number(e.target.value))} />
+            onChange={(e) => set("years_experience", Math.max(0, Number(e.target.value) || 0))} />
         </div>
         <div>
           <label className="label">Japanese level</label>
@@ -140,7 +166,7 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
         </div>
         <div>
           <label className="label">Education</label>
-          <input className="input" value={p.education} onChange={(e) => set("education", e.target.value)} />
+          <input className="input" value={p.education} maxLength={120} onChange={(e) => set("education", e.target.value)} />
         </div>
         <div>
           <label className="label">From (India)</label>
@@ -156,9 +182,10 @@ export function IntakeForm({ onRun, loading }: { onRun: (p: Profile) => void; lo
         </div>
       </div>
 
-      <button type="submit" className="btn-primary mt-6 w-full" disabled={loading}>
+      <button type="submit" className="btn-primary mt-6 w-full" disabled={loading || !valid}>
         {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Agents working…</> : <><Play className="h-4 w-4" /> Run the agents</>}
       </button>
+      {!valid && <p className="mt-2 text-center text-xs text-ink/45">Add your skills{choice === "Other (custom)" ? " and sector" : ""} to continue.</p>}
     </form>
   );
 }

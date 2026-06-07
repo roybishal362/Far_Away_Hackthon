@@ -10,13 +10,16 @@ interface StreamHandlers {
 }
 
 /** POST-based SSE: fetch + manual parse (EventSource only supports GET). */
-export async function streamRun(profile: Profile, h: StreamHandlers): Promise<void> {
+export async function streamRun(profile: Profile, h: StreamHandlers, signal?: AbortSignal): Promise<void> {
   const res = await fetch(`${API}/run/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(profile),
+    signal,
   });
-  if (!res.ok || !res.body) throw new Error(`Run failed: ${res.status}`);
+  if (!res.ok || !res.body) {
+    throw new Error(res.status === 422 ? "Please check your inputs and try again." : `Run failed: ${res.status}`);
+  }
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
@@ -88,20 +91,23 @@ export async function uploadResume(file: File): Promise<Partial<Profile>> {
   return res.json();
 }
 
-export async function savePlan(plan: RunResult): Promise<{ id: string }> {
+export async function savePlan(plan: RunResult, profile: Profile | null): Promise<{ id: string }> {
   const res = await fetch(`${API}/save`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(plan),
+    body: JSON.stringify({ result: plan, profile }),
   });
   if (!res.ok) throw new Error("Save failed");
   return res.json();
 }
 
-export async function loadPlan(id: string): Promise<RunResult> {
+export async function loadPlan(id: string): Promise<{ result: RunResult; profile: Profile | null }> {
   const res = await fetch(`${API}/plan/${id}`);
   if (!res.ok) throw new Error("Plan not found");
-  return res.json();
+  const data = await res.json();
+  // New shape {result, profile}; tolerate a legacy bare RunResult.
+  if (data && data.result) return { result: data.result, profile: data.profile ?? null };
+  return { result: data, profile: null };
 }
 
 export async function downloadDossier(plan: RunResult, profile: Profile | null): Promise<void> {

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import queue
+import re
 import threading
 from io import BytesIO
 
@@ -185,8 +186,13 @@ def save_endpoint(payload: dict = Body(...)) -> dict:
     return {"id": store.save(payload)}
 
 
+_PID_RE = re.compile(r"^[A-Za-z0-9_-]{6,24}$")
+
+
 @app.get("/plan/{pid}")
 def plan_endpoint(pid: str) -> dict:
+    if not _PID_RE.match(pid):  # block path traversal (e.g. ../../file)
+        raise HTTPException(status_code=400, detail="invalid id")
     plan = store.load(pid)
     if not plan:
         raise HTTPException(status_code=404, detail="plan not found")

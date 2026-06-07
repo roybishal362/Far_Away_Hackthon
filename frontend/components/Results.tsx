@@ -97,20 +97,21 @@ function PathwayTab({ r }: { r?: AgentResult }) {
 /* ---------- Jobs (searchable, comprehensive) ---------- */
 
 function JobsTab({ r }: { r?: AgentResult }) {
+  // Hooks must run unconditionally (before any early return) — see React rules-of-hooks.
   const [q, setQ] = useState("");
-  if (!r?.ok) return <Empty msg={r?.error ? `Jobs: ${r.error}` : "Jobs unavailable."} />;
-  const jobs: any[] = r.data?.jobs || [];
+  const jobs: any[] = r?.data?.jobs || [];
   const filtered = useMemo(
     () => jobs.filter((j) => `${j.title} ${j.employer} ${j.city}`.toLowerCase().includes(q.toLowerCase())),
     [jobs, q]
   );
+  if (!r?.ok) return <Empty msg={r?.error ? `Jobs: ${r.error}` : "Jobs unavailable."} />;
   return (
     <div className="card">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h4 className="flex items-center gap-2 font-display text-xl"><Briefcase className="h-5 w-5 text-indigo-700" /> {jobs.length} live openings</h4>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
-          <input className="input !w-64 pl-9" placeholder="Filter by title / employer / city" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="input w-full pl-9 sm:!w-64" aria-label="Filter jobs" placeholder="Filter by title / employer / city" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
       </div>
       <div className="grid max-h-[480px] gap-2 overflow-auto pr-1 sm:grid-cols-2">
@@ -395,8 +396,8 @@ export function ResultsPanel({ result, profile }: { result: RunResult; profile: 
   async function handleSave() {
     setSaving(true);
     try {
-      const { id } = await savePlan(result);
-      setShareUrl(`${window.location.origin}/?plan=${id}`);
+      const { id } = await savePlan(result, profile);
+      setShareUrl(`${window.location.origin}/app?plan=${id}`);
     } catch { setShareUrl("error"); } finally { setSaving(false); }
   }
   async function handlePdf() {
@@ -461,10 +462,10 @@ export function ResultsPanel({ result, profile }: { result: RunResult; profile: 
       )}
 
       {/* tab bar */}
-      <div className="mb-5 flex flex-wrap gap-1.5 rounded-2xl border border-black/[0.06] bg-white/70 p-1.5 backdrop-blur">
+      <div role="tablist" className="mb-5 flex gap-1.5 overflow-x-auto rounded-2xl border border-black/[0.06] bg-white/70 p-1.5 backdrop-blur">
         {tabs.map((t) => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            className={"inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-medium transition " +
+          <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
+            className={"inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-medium transition " +
               (tab === t.id ? "bg-gradient-to-r from-sakura-600 to-marigold-500 text-white shadow-glow" : "text-ink/60 hover:bg-black/[0.04]")}>
             {t.icon}{t.label}
           </button>
