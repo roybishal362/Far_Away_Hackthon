@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Brain, CheckCircle2, Cog, Download, Loader2 } from "lucide-react";
+import { Brain, CheckCircle2, Cog, Download, Loader2, MinusCircle } from "lucide-react";
 import { StepEvent } from "@/lib/types";
 
 const AGENTS: { id: string; label: string; emoji: string }[] = [
@@ -17,11 +17,13 @@ const KIND_ICON: Record<string, JSX.Element> = {
   tool_call: <Cog className="h-3.5 w-3.5 animate-spin text-marigold-600" />,
   tool_result: <Download className="h-3.5 w-3.5 text-emerald-600" />,
   decide: <CheckCircle2 className="h-3.5 w-3.5 text-sakura-600" />,
+  skip: <MinusCircle className="h-3.5 w-3.5 text-ink/30" />,
 };
 
 export function AgentTimeline({ steps, running }: { steps: StepEvent[]; running: boolean }) {
   const activeAgent = steps.length ? steps[steps.length - 1].agent : null;
   const seen = new Set(steps.map((s) => s.agent));
+  const skipped = new Set(steps.filter((s) => s.kind === "skip").map((s) => s.agent));
 
   return (
     <div className="card">
@@ -37,8 +39,9 @@ export function AgentTimeline({ steps, running }: { steps: StepEvent[]; running:
       {/* agent status rail */}
       <div className="mb-5 flex flex-wrap gap-2">
         {AGENTS.map((a) => {
-          const done = seen.has(a.id) && a.id !== activeAgent;
-          const active = a.id === activeAgent && running;
+          const isSkipped = skipped.has(a.id);
+          const done = !isSkipped && seen.has(a.id) && a.id !== activeAgent;
+          const active = a.id === activeAgent && running && !isSkipped;
           return (
             <span
               key={a.id}
@@ -48,12 +51,16 @@ export function AgentTimeline({ steps, running }: { steps: StepEvent[]; running:
                   ? "bg-marigold-500 text-white shadow-glow"
                   : done
                   ? "bg-emerald-50 text-emerald-700"
+                  : isSkipped
+                  ? "bg-black/[0.03] text-ink/35 line-through"
                   : "bg-black/[0.04] text-ink/40")
               }
+              title={isSkipped ? "Not applicable for this visa route" : undefined}
             >
-              <span>{a.emoji}</span>
+              <span className={isSkipped ? "opacity-50" : ""}>{a.emoji}</span>
               {a.label}
               {done && <CheckCircle2 className="h-3 w-3" />}
+              {isSkipped && <MinusCircle className="h-3 w-3" />}
             </span>
           );
         })}

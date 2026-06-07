@@ -75,6 +75,10 @@ class Engine:
                 and getattr(pw, "data", None)
                 and pw.data.get("eligibility_verdict") == "redirect"
             ):
+                skip = ReasoningStep(f"{agent.name.capitalize()} skipped — not applicable for this visa route", kind="skip")
+                result.timeline.append((agent.name, skip))
+                if on_step:
+                    on_step(agent.name, skip)
                 continue
             try:
                 ar = agent.run(profile, context)

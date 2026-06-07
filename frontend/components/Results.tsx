@@ -390,6 +390,7 @@ export function ResultsPanel({ result, profile }: { result: RunResult; profile: 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const r = result.results;
+  const isRedirect = r.pathway?.data?.eligibility_verdict === "redirect";
 
   async function handleSave() {
     setSaving(true);
@@ -414,9 +415,12 @@ export function ResultsPanel({ result, profile }: { result: RunResult; profile: 
     { id: "overview", label: "Overview", icon: <Home className="h-4 w-4" /> },
     { id: "pathway", label: "Pathway", icon: <MapPin className="h-4 w-4" /> },
     { id: "jobs", label: `Jobs (${r.jobs?.data?.jobs?.length ?? 0})`, icon: <Briefcase className="h-4 w-4" /> },
-    { id: "procedure", label: "Procedure", icon: <FileText className="h-4 w-4" /> },
-    { id: "study", label: "Study plan", icon: <GraduationCap className="h-4 w-4" /> },
-    { id: "journey", label: "Journey", icon: <Plane className="h-4 w-4" /> },
+    // SSW-only tabs hidden when the worker is routed to a different visa.
+    ...(isRedirect ? [] : [
+      { id: "procedure", label: "Procedure", icon: <FileText className="h-4 w-4" /> },
+      { id: "study", label: "Study plan", icon: <GraduationCap className="h-4 w-4" /> },
+      { id: "journey", label: "Journey", icon: <Plane className="h-4 w-4" /> },
+    ]),
     { id: "proof", label: "Proof", icon: <ShieldCheck className="h-4 w-4" /> },
     { id: "chat", label: "Ask AI", icon: <MessageCircle className="h-4 w-4" /> },
   ];
