@@ -40,17 +40,23 @@ class EvalReport:
 
 
 def _judge(answer_text: str) -> tuple[int, int]:
-    """Return (covered_count, contradicted_count) of the answer vs GOLD."""
+    """Return (covered_count, contradicted_count) of the answer vs GOLD.
+
+    Uses a per-fact verdict object (not an index list) so the model can't mash
+    indices into one number — a real bug that silently zeroed the score.
+    """
     numbered = "\n".join(f"{i + 1}. {g}" for i, g in enumerate(GOLD))
     user = (
         f"GOLD FACTS:\n{numbered}\n\nANSWER:\n{answer_text}\n\n"
-        'Return JSON: {"covered": [<indices correctly supported>], '
-        '"contradicted": [<indices the answer states incorrectly>]}'
+        "For EACH gold fact, decide whether the ANSWER supports it and whether the ANSWER contradicts it. "
+        'Return JSON with ONE object per fact: '
+        '{"verdicts": [{"id": <fact number>, "supported": true/false, "contradicted": true/false}, ...]}'
     )
-    data = get_llm().json(JUDGE_SYSTEM, user)
-    covered = [i for i in (data.get("covered") or []) if isinstance(i, int)]
-    contradicted = [i for i in (data.get("contradicted") or []) if isinstance(i, int)]
-    return len(set(covered)), len(set(contradicted))
+    data = get_llm().json(JUDGE_SYSTEM, user, temperature=0.0)  # deterministic scoring
+    verdicts = data.get("verdicts") or []
+    covered = sum(1 for v in verdicts if isinstance(v, dict) and v.get("supported"))
+    contradicted = sum(1 for v in verdicts if isinstance(v, dict) and v.get("contradicted"))
+    return covered, contradicted
 
 
 def run_ablation(profile: WorkerProfile) -> EvalReport:
@@ -73,6 +79,7 @@ def run_ablation(profile: WorkerProfile) -> EvalReport:
         UNGROUNDED_SYSTEM,
         f"Worker: {profile_text(profile)}\nList the SSW eligibility requirements and limits as "
         'JSON: {"requirements": ["..."], "limits": ["..."]}',
+        temperature=0.0,
     )
     u_cov, u_hall = _judge(json.dumps(ungrounded))
 

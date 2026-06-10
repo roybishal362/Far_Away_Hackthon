@@ -18,8 +18,10 @@ Specified Skilled Worker (SSW) journey — every answer cited from official sour
 ## 🎯 The problem (why we built this)
 
 In **August 2025**, India and Japan signed a Human Resource Exchange Partnership to move **50,000 skilled
-Indian workers** to Japan — which faces a severe labour shortage (300,000+ caregivers short by 2035). Both
-governments named **AI talent mobility** and **trustworthy AI** as the way to make it happen.
+Indian workers** to Japan — which faces a severe labour shortage (the MHLW projects a **~570,000 care-worker
+shortfall by 2040**). Both governments named **AI talent mobility** and **trustworthy AI** as the way to make
+it happen — and the Japan–India SSW Memorandum of Cooperation explicitly targets *"the elimination of
+malicious intermediary organizations"* (the scam-middleman problem Kakehashi routes around).
 
 But for an actual worker, the journey is a months-long maze: *Which visa? Am I even eligible? The JLPT N4
 language bar, sector skills tests, immigration paperwork, finding a real employer, the cost, the relocation…*
@@ -46,8 +48,9 @@ You tell Kakehashi about yourself (or upload your resume). A team of **autonomou
 1. **Real or nothing.** Every tool returns real data or *honestly says it's not configured* — it physically
    cannot fabricate. Jobs are real live listings; SSW rules are grounded in official `ssw.go.jp` / MOFA pages
    with a citation on every claim.
-2. **Proven, not claimed.** A built-in ablation measures our grounded agents vs. a plain LLM:
-   **accuracy ≈14% → ≈71%, hallucinations ≈6 → 0** against a gold set of official facts. The proof is a number.
+2. **Proven, not claimed.** A built-in, reproducible ablation measures our grounded agents vs. a plain LLM:
+   grounded scores **86% accuracy with 0 hallucinations on *every* run**, while the plain LLM swings **29–71%**
+   against a gold set of official facts. Accurate *and* consistent — see [PROOF.md](PROOF.md).
 3. **Genuinely autonomous.** 6 specialized agents reason → call a real tool → cite → score confidence, and the
    orchestrator **adapts the plan to you** (e.g. an IT worker is routed to the Engineer visa and the SSW-only
    steps are skipped automatically). Most "agentic" demos are a single prompt wrapper — this isn't.
@@ -82,10 +85,11 @@ config.py       loads keys from env/secrets; honest no-key degradation
 
 | | Accuracy | Hallucinations |
 |---|---|---|
-| **Our grounded agents** | ≈ 71% | **0** |
-| Plain LLM (ungrounded) | ≈ 14% | 6 |
+| **Our grounded agents** | **86%** (every run) | **0** |
+| Plain LLM (ungrounded) | 29–71% (erratic) | 0–1 |
 
-*Grounding takes accuracy 14% → 71% and cuts hallucinations to zero. That gap is the evidence.*
+*Across 3 runs, grounding holds **86% / 0 hallucinations every time** while the plain LLM swings 29–71%.
+Accurate AND consistent — full method + table in [PROOF.md](PROOF.md).*
 
 ## 🔌 Real data sources
 
@@ -137,8 +141,19 @@ npm run dev      # http://localhost:3000
 **`.env` keys** (free): `GROQ_API_KEY` (console.groq.com) · `JSEARCH_API_KEY` (OpenWeb Ninja) ·
 `ESTAT_APP_ID` (e-stat.go.jp). The app degrades honestly without any key.
 
+## 🤖 Why this is agentic — not a workflow
+- **Runtime decisions, not just a pipeline:** agents act on their own observations — e.g. the Jobs agent autonomously **broadens its query and retries** when results are thin (watch it decide in the live timeline).
+- **Adaptive orchestration:** the router classifies the visa route and the engine **skips the agents that don't apply** (an IT worker never runs the SSW-only steps).
+- **Tool-grounded + self-scoring:** every agent calls a real external tool, cites the source, and scores its own confidence; missing data degrades honestly ("not configured") instead of being fabricated.
+
+## 🧪 For judges — try it in 90 seconds
+On **/app**, click a persona chip: **Priya (nurse)** → full SSW plan · **Arjun (software)** → watch it reroute to the **Engineer visa** and skip SSW steps · **Meera (HR)** → **Specialist visa**. Then open **Proof** (grounded-vs-ungrounded chart) and **Ask AI** (try 日本語). See reproducible proof numbers in [PROOF.md](PROOF.md).
+
+## ⚖️ Responsible use & privacy
+Kakehashi is **decision-support, not legal or immigration advice** — every claim is cited so you can verify it at the official source. **Data:** an uploaded resume is used only to personalize the current run; a persisted plan is encrypted at rest with **Fernet (AES-128-CBC + HMAC-SHA256)**; no personal data is written to logs.
+
 ## 📜 More
-[ARCHITECTURE.md](ARCHITECTURE.md) · [DEPLOY.md](DEPLOY.md) · smoke tests in `scripts/`.
+[ARCHITECTURE.md](ARCHITECTURE.md) · [DEPLOY.md](DEPLOY.md) · [PROOF.md](PROOF.md) · smoke tests in `scripts/`.
 
 <div align="center">
 

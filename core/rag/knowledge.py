@@ -67,8 +67,13 @@ FACTS: list[dict] = [
         "title": "PM India - India-Japan HR Exchange Action Plan", "tags": ["india", "partnership", "2025"],
     },
     {
-        "text": "Japan faces a severe caregiver shortage, officially estimated at more than 300,000 caregivers by 2035, a key driver of foreign-worker acceptance.",
-        "source_url": "https://www.preventionweb.net/news/japans-aging-population-will-increase-disaster-vulnerability",
-        "title": "Japan aging & labor shortage", "tags": ["caregiving", "demand", "aging"],
+        "text": "Japan faces a severe care-worker shortage: the Ministry of Health, Labour and Welfare (MHLW) projects a shortfall of about 570,000 care workers by 2040 (9th Long-Term Care Insurance Business Plan), a key driver of foreign-worker acceptance.",
+        "source_url": "https://isvd.or.jp/en/columns/2026-03-09-care-worker-shortage-structure",
+        "title": "MHLW - care-worker shortage (570k by 2040)", "tags": ["caregiving", "demand", "aging"],
+    },
+    {
+        "text": "The Japan-India Memorandum of Cooperation on Specified Skilled Workers (signed 18 Jan 2021) states its purpose includes 'the elimination of malicious intermediary organizations' - the scam-middleman problem is acknowledged by the governments themselves.",
+        "source_url": "https://www.mofa.go.jp/press/release/press6e_000266.html",
+        "title": "MOFA - Japan-India SSW MoC (eliminate malicious intermediaries)", "tags": ["india", "partnership", "scams", "intermediaries"],
     },
 ]

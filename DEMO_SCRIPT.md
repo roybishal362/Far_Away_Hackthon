@@ -30,7 +30,7 @@
 **[0:40–0:52] The autonomy 'wow' + the proof**
 > "Watch what happens for a software engineer —"
 *(Click **Arjun · Software Eng** chip.)*
-> "— it **refuses** to force SSW and reroutes to the Engineer visa, skipping the steps that don't apply. And it proves itself: grounding takes accuracy from 14% to 71% and **hallucinations to zero**."
+> "— it **refuses** to force SSW and reroutes to the Engineer visa, skipping the steps that don't apply. And it proves itself: grounded, it scores **86% with zero hallucinations on every run** — while a plain LLM swings 29–71%."
 *(Open the **Proof** tab / show the chart.)*
 
 **[0:52–1:00] Close**

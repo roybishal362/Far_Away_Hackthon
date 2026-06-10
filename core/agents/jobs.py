@@ -74,25 +74,52 @@ class JobsAgent(Agent):
     def __init__(self) -> None:
         self.tool = JobsTool()
 
+    MIN_RESULTS = 3
+
     def run(self, profile: WorkerProfile, context: dict) -> AgentResult:
         sector = _sector(context, profile)
         keyword = _keyword(sector, profile)
         steps = [ReasoningStep(f"Searching live jobs for '{keyword}' (sector: {sector})", kind="tool_call")]
-        result = self.tool.run(query=keyword, location="Japan", limit=25, num_pages=2)
 
-        if not result.ok:
-            steps.append(ReasoningStep("Jobs source unavailable", result.error or "", kind="tool_result"))
-            return AgentResult(agent=self.name, ok=False, error=result.error, steps=steps)
+        # Runtime autonomy: try the best keyword; if too few REAL results come back, the agent
+        # DECIDES to broaden the query and retry — observable in the live timeline.
+        candidates = [keyword]
+        for extra in [(sector.split("/")[0].split()[0] if sector else ""),
+                      (profile.skills or "").split(",")[0].strip(),
+                      "skilled worker"]:
+            extra = (extra or "").strip()
+            if extra and extra.lower() not in [c.lower() for c in candidates]:
+                candidates.append(extra)
 
-        jobs = result.data or []
-        steps.append(ReasoningStep(f"Found {len(jobs)} real openings", result.source, kind="tool_result"))
+        jobs: list[dict] = []
+        seen: set = set()
+        used, source, citations = keyword, "JSearch", []
+        for i, kw in enumerate(candidates):
+            if i > 0:
+                steps.append(ReasoningStep(
+                    f"Only {len(jobs)} result(s) — autonomously broadening the search to '{kw}' and retrying",
+                    kind="decide"))
+            result = self.tool.run(query=kw, location="Japan", limit=25, num_pages=2)
+            if not result.ok:
+                steps.append(ReasoningStep("Jobs source unavailable", result.error or "", kind="tool_result"))
+                return AgentResult(agent=self.name, ok=False, error=result.error, steps=steps)
+            for j in (result.data or []):
+                key = j.get("apply_link") or j.get("title")
+                if key and key not in seen:
+                    seen.add(key)
+                    jobs.append(j)
+            source, citations, used = result.source, (result.citations or citations), kw
+            if len(jobs) >= self.MIN_RESULTS:
+                break
+
+        steps.append(ReasoningStep(f"Found {len(jobs)} real openings", source, kind="tool_result"))
         jobs = _rank(jobs, profile)
         steps.append(ReasoningStep("Ranked jobs by fit to your profile", kind="decide"))
         return AgentResult(
             agent=self.name,
-            summary=f"{len(jobs)} live openings matching '{keyword}' in Japan, ranked by fit.",
-            data={"sector": sector, "keyword": keyword, "jobs": jobs},
-            citations=result.citations,
+            summary=f"{len(jobs)} live openings matching '{used}' in Japan, ranked by fit.",
+            data={"sector": sector, "keyword": used, "jobs": jobs},
+            citations=citations,
             confidence=0.95 if jobs else 0.3,
             steps=steps,
             ok=True,
