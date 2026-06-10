@@ -24,3 +24,6 @@ data/raw/
 
 # Local push helper (no secret inside, but keep it out of the repo)
 push-to-github.ps1
+
+# Internal R2/R3 strategy — keep out of the public submission repo
+ROADMAP_R2_R3.md
