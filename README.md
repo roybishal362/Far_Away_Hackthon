@@ -11,9 +11,11 @@
 
 `Real data, never fake` · `Every answer cited` · `Proven with numbers` · `English / हिन्दी / 日本語`
 
-<!-- 📸 HERO IMAGE — open this README on github.com, click the ✏️ edit button, and drag your
-     cherry-blossom bridge photo right here. Or save it as docs/hero.jpg and uncomment the next line: -->
-![Kakehashi](hero.png)
+<br/>
+
+<img src="hero.png" width="100%" alt="Kakehashi — Mount Fuji, a wooden bridge, and cherry blossoms: the bridge from India to Japan" />
+
+<br/>
 
 </div>
 
