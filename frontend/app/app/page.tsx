@@ -53,15 +53,24 @@ export default function AppPage() {
 
   return (
     <main className="container-app min-h-screen pt-10">
-      <div className="mb-6">
-        <h1 className="font-display text-3xl sm:text-4xl">Build your migration plan</h1>
-        <p className="mt-1 max-w-2xl text-ink/60">
-          Tell us about you — autonomous agents read official Japanese sources + live jobs to build a cited,
-          personalized plan. Upload your resume to auto-fill, and pick your language.
+      <div className="relative isolate overflow-hidden rounded-3xl p-7 text-white shadow-card sm:p-9">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/fuji-sakura.jpg" alt="" className="absolute inset-0 -z-20 h-full w-full object-cover" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-900/94 via-indigo-900/90 to-sakura-600/70" />
+        <span className="eyebrow text-sakura-300">Build my plan</span>
+        <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Your personal migration plan, in one run.</h1>
+        <p className="mt-2 max-w-2xl text-white/80">
+          Tell us about you — or upload your resume. Autonomous agents read official Japanese sources + live jobs to
+          build a cited, personalized plan. Pick your language, then watch them work live.
         </p>
+        <div className="mt-4 flex flex-wrap gap-2 text-xs">
+          {["Real data only", "Every claim cited", "EN · हिन्दी · 日本語", "Free"].map((t) => (
+            <span key={t} className="glass px-3 py-1 font-medium text-white/85">{t}</span>
+          ))}
+        </div>
       </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div className="mt-8 grid items-start gap-6 lg:grid-cols-2">
         <IntakeForm onRun={handleRun} loading={running} />
         <AgentTimeline steps={steps} running={running} />
       </div>
