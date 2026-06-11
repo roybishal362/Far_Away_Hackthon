@@ -27,7 +27,7 @@
 |---|---|
 | 🚀 **Live app** | **https://kakehashi-4e1v.vercel.app/** |
 | ⚙️ **Live API** | **https://far-away-hackthon.onrender.com** |
-| 🎬 **Demo video** | _see the [video section](#-demo-video) below_ |
+| 🎬 **Demo video** [![Watch Demo](https://img.youtube.com/vi/OtaC-AKZvlE/maxresdefault.jpg)](https://youtu.be/OtaC-AKZvlE)
 | 💻 **Code** | you're here |
 
 > ⏳ The API runs on Render's **free tier, so it sleeps when idle**. The first request can take **~30–50 seconds to wake up**. Tip: open the API link once and wait for it to load, then use the app — it'll be fast after that.
