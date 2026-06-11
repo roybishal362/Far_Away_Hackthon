@@ -13,7 +13,7 @@
 
 <!-- 📸 HERO IMAGE — open this README on github.com, click the ✏️ edit button, and drag your
      cherry-blossom bridge photo right here. Or save it as docs/hero.jpg and uncomment the next line: -->
-[Kakehashi](hero.png)
+![Kakehashi](hero.png)
 
 </div>
 
