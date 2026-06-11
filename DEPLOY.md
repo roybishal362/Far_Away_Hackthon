@@ -2,7 +2,7 @@
 
 Two pieces: the **FastAPI backend** (Render) and the **Next.js frontend** (Vercel). Both free.
 
-> ✅ **Already live:** app → https://kakehashi-liard.vercel.app/ · API → https://far-away-hackthon.onrender.com
+> ✅ **Already live:** app → https://kakehashi-4e1v.vercel.app/ · API → https://far-away-hackthon.onrender.com
 > (The steps below are how it was set up / how to redeploy.)
 
 ## 1) Backend → Render

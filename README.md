@@ -4,7 +4,7 @@
 
 ### An autonomous AI that helps Indian workers move to Japan — the honest way.
 
-[![Live demo](https://img.shields.io/badge/▶_Live_app-Vercel-000000?style=for-the-badge&logo=vercel)](https://kakehashi-liard.vercel.app/)
+[![Live demo](https://img.shields.io/badge/▶_Live_app-Vercel-000000?style=for-the-badge&logo=vercel)](https://kakehashi-4e1v.vercel.app/)
 [![Live API](https://img.shields.io/badge/⚙_Live_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://far-away-hackthon.onrender.com)
 
 **FAR AWAY 2026 — Theme: Agentic & Autonomous Systems**
@@ -25,7 +25,7 @@
 
 | | Link |
 |---|---|
-| 🚀 **Live app** | **https://kakehashi-liard.vercel.app/** |
+| 🚀 **Live app** | **https://kakehashi-4e1v.vercel.app/** |
 | ⚙️ **Live API** | **https://far-away-hackthon.onrender.com** |
 | 🎬 **Demo video** | _see the [video section](#-demo-video) below_ |
 | 💻 **Code** | you're here |
