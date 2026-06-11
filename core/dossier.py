@@ -1,18 +1,41 @@
 """Migration Dossier — render a run result + profile into a downloadable PDF.
 
-ASCII-safe text only (Helvetica) so it renders on any host; uses 'JPY' not the
-yen glyph and '->' not arrows to avoid missing-glyph boxes.
+Uses an embedded Unicode font (DejaVu Sans, bundled with matplotlib) so symbols
+like the rupee sign (Rs.) and en/em dashes render correctly instead of as missing
+-glyph boxes. Falls back to Helvetica if the font can't be located.
 """
 from __future__ import annotations
 
+import os
 from io import BytesIO
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (HRFlowable, ListFlowable, ListItem, Paragraph,
                                 SimpleDocTemplate, Spacer)
+
+
+def _register_unicode_font() -> tuple[str, str]:
+    """Register DejaVu Sans (ships with matplotlib) for proper ₹ / dash rendering.
+
+    Returns (regular, bold) font names — Helvetica if registration fails.
+    """
+    try:
+        import matplotlib
+        ttf = os.path.join(os.path.dirname(matplotlib.__file__), "mpl-data", "fonts", "ttf")
+        pdfmetrics.registerFont(TTFont("KDejaVu", os.path.join(ttf, "DejaVuSans.ttf")))
+        pdfmetrics.registerFont(TTFont("KDejaVu-Bold", os.path.join(ttf, "DejaVuSans-Bold.ttf")))
+        pdfmetrics.registerFontFamily("KDejaVu", normal="KDejaVu", bold="KDejaVu-Bold")
+        return "KDejaVu", "KDejaVu-Bold"
+    except Exception:
+        return "Helvetica", "Helvetica-Bold"
+
+
+_FONT, _FONT_BOLD = _register_unicode_font()
 
 
 def build(plan: dict, profile: dict) -> bytes:
@@ -22,10 +45,10 @@ def build(plan: dict, profile: dict) -> bytes:
         topMargin=1.6 * cm, bottomMargin=1.6 * cm, leftMargin=1.8 * cm, rightMargin=1.8 * cm,
     )
     ss = getSampleStyleSheet()
-    h1 = ParagraphStyle("h1", parent=ss["Title"], fontSize=20, textColor=colors.HexColor("#1f2150"))
-    h2 = ParagraphStyle("h2", parent=ss["Heading2"], textColor=colors.HexColor("#e11d54"))
-    body = ss["BodyText"]
-    small = ParagraphStyle("small", parent=body, fontSize=8, textColor=colors.grey)
+    h1 = ParagraphStyle("h1", parent=ss["Title"], fontName=_FONT_BOLD, fontSize=20, textColor=colors.HexColor("#1f2150"))
+    h2 = ParagraphStyle("h2", parent=ss["Heading2"], fontName=_FONT_BOLD, textColor=colors.HexColor("#e11d54"))
+    body = ParagraphStyle("body", parent=ss["BodyText"], fontName=_FONT)
+    small = ParagraphStyle("small", parent=body, fontName=_FONT, fontSize=8, textColor=colors.grey)
 
     def P(t, s=body):
         return Paragraph(str(t), s)
