@@ -2,9 +2,12 @@
 
 Two pieces: the **FastAPI backend** (Render) and the **Next.js frontend** (Vercel). Both free.
 
+> ✅ **Already live:** app → https://kakehashi-liard.vercel.app/ · API → https://far-away-hackthon.onrender.com
+> (The steps below are how it was set up / how to redeploy.)
+
 ## 1) Backend → Render
 1. Push this repo to GitHub (done).
-2. Go to [render.com](https://render.com) → **New +** → **Web Service** → connect your `Far_Away_Hackthon` repo.
+2. Go to [render.com](https://render.com) → **New +** → **Web Service** → connect your `Kakehashi` repo.
 3. Render reads `render.yaml` automatically. (If asked manually: Runtime **Python**, Build `pip install -r requirements.txt`, Start `uvicorn api.main:app --host 0.0.0.0 --port $PORT`.)
 4. In **Environment**, add your secrets:
    - `GROQ_API_KEY`, `JSEARCH_API_KEY`, `ESTAT_APP_ID`
