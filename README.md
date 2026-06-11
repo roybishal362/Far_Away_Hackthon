@@ -27,7 +27,7 @@
 |---|---|
 | 🚀 **Live app** | **https://kakehashi-4e1v.vercel.app/** |
 | ⚙️ **Live API** | **https://far-away-hackthon.onrender.com** |
-| 🎬 **Demo video** [![Watch Demo](https://img.youtube.com/vi/OtaC-AKZvlE/maxresdefault.jpg)](https://youtu.be/OtaC-AKZvlE)
+| 🎬 **Demo video** | **https://youtu.be/OtaC-AKZvlE** |
 | 💻 **Code** | you're here |
 
 > ⏳ The API runs on Render's **free tier, so it sleeps when idle**. The first request can take **~30–50 seconds to wake up**. Tip: open the API link once and wait for it to load, then use the app — it'll be fast after that.
@@ -61,19 +61,7 @@ Then you can **save, share, or download** the whole thing as a PDF "Migration Do
 
 ## 🎬 Demo video
 
-<!-- 🎬 ADD YOUR VIDEO HERE — it's easy:
-     1. Open this README on github.com and click the ✏️ (edit) pencil button.
-     2. Drag your .mp4 / .mov file straight into the editor at THIS spot.
-     3. GitHub uploads it and pastes in a link like:
-            https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx
-        That link turns into a playable video automatically. Save (commit) the file.
-     • Size limit: 10 MB on a free GitHub plan.
-     • If your video is bigger: upload it to YouTube and uncomment the thumbnail line below
-       (replace VIDEO_ID with the id from the YouTube URL). -->
-
-<!-- YouTube fallback — uncomment and replace VIDEO_ID:
-[![Watch the demo](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
--->
+[![Watch Demo](https://img.youtube.com/vi/OtaC-AKZvlE/maxresdefault.jpg)](https://youtu.be/OtaC-AKZvlE)
 
 > 📌 **Video goes here.** When you edit this file, you'll see step-by-step instructions in the comment right above this line. Drop your `.mp4` in and it plays right inside the README.
 
