@@ -1,20 +1,25 @@
-# 📊 PROOF — the grounded-vs-ungrounded ablation (reproducible)
+# 📊 PROOF — does grounding actually work? We measured it.
 
-Kakehashi's core claim is "grounded, not hallucinated." This is the measurement behind it —
-reproducible, committed, and honest about its limits.
+Kakehashi's main promise is: **the answers are grounded in official sources, not made up.**
+This file is the measurement behind that promise — and anyone can re-run it and get the same result.
 
-## Method
-- **Gold set:** **22 checkable SSW facts** curated from official sources (eligibility, tests, duration,
-  worker rights & anti-scam protections, process, the India corridor) — see [`core/eval/gold.py`](core/eval/gold.py).
-  Every fact maps to a knowledge-base entry carrying its official source URL.
-- **Grounded** = our real multi-agent system (Pathway + Procedure + Prep, RAG-grounded with citations).
-- **Ungrounded** = the *same* question asked to the plain LLM with **no** official context.
-- **Judge:** an LLM (the configured Groq model — this run `llama-3.3-70b-versatile`, **temperature 0**) gives a
-  per-fact verdict — does the answer *support* each gold fact (→ accuracy) and does it *contradict* any (→ hallucination)?
-  **Per-fact verdicts are committed** in [`eval/results.json`](eval/results.json) so anyone can audit the score.
-- **Personas:** 3 SSW-route profiles (nurse / agriculture / construction) × 3 runs each.
-- **Reproduce it:** `python scripts/run_eval.py` — it rewrites the table below, regenerates the chart,
-  and writes the raw verdicts. The published numbers are never hand-typed.
+## How we measured it
+
+We take the **same questions** and answer them two ways:
+- ✅ **Grounded** — our agents, using the official SSW sources (with citations).
+- ❌ **Ungrounded** — a plain LLM answering the same thing with **no** sources.
+
+Then an automatic **judge** (an LLM set to temperature 0) checks both answers against a list of
+**22 official SSW facts** — things like age limits, language tests, length of stay, worker rights, and the
+India–Japan corridor (see [`core/eval/gold.py`](core/eval/gold.py)). For each fact it asks two questions:
+*does the answer get this fact right?* (accuracy) and *does it say anything that contradicts this fact?*
+(a hallucination).
+
+We run this for **3 worker types** (nurse / farm / construction), several times each. Every per-fact
+decision is saved in [`eval/results.json`](eval/results.json), so you can check exactly what was counted.
+
+**Reproduce it yourself:** `python scripts/run_eval.py`. It rewrites the table below, redraws the chart,
+and saves the raw verdicts. **The numbers are never typed by hand.**
 
 ## Results
 
@@ -34,25 +39,27 @@ reproducible, committed, and honest about its limits.
 ![Ablation chart](eval/ablation_chart.png)
 <!-- EVAL:END -->
 
-## What this shows
-1. **Higher accuracy:** grounding lifts factual coverage of official SSW facts substantially.
-2. **Zero (or near-zero) hallucinations:** the grounded system is built so it physically cannot state
-   un-retrieved "facts" — contradictions of official facts should be 0 in every run.
-3. **Reliability (the underrated win):** grounded runs are consistent across personas and repeats,
-   while the ungrounded baseline swings run-to-run — grounding buys *consistency*, not just accuracy.
+## What this proves
 
-## Honest limits (so the number is trustworthy)
-- **N = 22 gold facts** — bigger than the original 7, still a curated set, not a public benchmark.
-- Grounded accuracy will not be 100%: a correct plan for one persona doesn't volunteer every fact
-  (e.g. SSW-2 family rules for an SSW-1 nurse) — the per-fact verdicts in `eval/results.json` show exactly which.
-- Measured with `llama-3.3-70b-versatile` as both system and judge (free-tier daily quota). On a stronger base
-  model the *ungrounded* baseline scores higher, so part of this run's large gap reflects llama's weaker prior SSW
-  knowledge — the point is the consistent direction: grounding adds accuracy and removes contradictions of official facts.
-- **Spot-checked on the deployed model `gpt-oss-120b`:** run 1 gave grounded **50% / 0 hallucinations** vs
-  ungrounded **4% / 1** — consistent with the llama run. A full `gpt-oss-120b` pass needs the Groq **Dev tier**: the
-  free per-minute token cap (8000 TPM) throttles the ablation's rapid back-to-back judge calls.
-- Grounded accuracy isn't 100% by design — the value is the **citation on every claim** and **0 contradictions of
-  official facts in every run**, which the ungrounded baseline never achieves.
+1. **Grounding is more accurate** — it gets far more of the official facts right.
+2. **Grounding removes made-up facts** — the grounded system contradicted an official fact **0 times in every
+   single run**. It's built so it can't state a "fact" it didn't actually retrieve.
+3. **The gap is the whole point** — same questions, same judge; the only difference is whether the answer was
+   grounded in official sources. That difference is the value of the system.
+
+## Being honest about the limits
+
+- **22 facts is a curated list, not a giant public benchmark.** It's bigger and harder than our first 7-fact
+  set, but it's still our own list.
+- **Grounded accuracy isn't 100%, and that's expected.** A plan for one person won't mention every fact
+  (e.g. an SSW-1 nurse's plan won't talk about SSW-2 family rules). The per-fact verdicts in `eval/results.json`
+  show exactly which facts each answer covered.
+- **Which model ran this.** This run used `llama-3.3-70b-versatile` (free-tier daily quota). On a stronger model
+  the *plain LLM* also scores higher, so part of this run's huge gap is simply that llama knows little about SSW on
+  its own. The direction is what matters: grounding adds accuracy and removes contradictions.
+- **We spot-checked the deployed model (`gpt-oss-120b`):** it gave grounded **50% / 0 hallucinations** vs
+  ungrounded **4% / 1** — the same story. A full run on `gpt-oss-120b` needs the Groq **Dev tier**, because the free
+  plan's per-minute token limit (8000) is too small for the eval's rapid back-to-back judge calls.
 
 ---
 
