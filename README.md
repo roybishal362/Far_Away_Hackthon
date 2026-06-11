@@ -11,11 +11,6 @@
 
 `Real data, never fake` · `Every answer cited` · `Proven with numbers` · `English / हिन्दी / 日本語`
 
-<br/>
-
-<img src="hero.webp" width="100%" alt="Kakehashi — Mount Fuji, a wooden bridge, and cherry blossoms: the bridge from India to Japan" />
-
-<br/>
 
 </div>
 
