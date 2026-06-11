@@ -50,18 +50,19 @@ def _judge(answer_text: str) -> tuple[int, int, list[dict]]:
     indices into one number — a real bug that silently zeroed the score.
     """
     numbered = "\n".join(f"{i + 1}. {g}" for i, g in enumerate(GOLD))
+    answer_text = (answer_text or "")[:5000]  # bound input so input + max_tokens stays under free-tier TPM caps
     user = (
         f"GOLD FACTS:\n{numbered}\n\nANSWER:\n{answer_text}\n\n"
         "For EACH gold fact, decide whether the ANSWER supports it and whether the ANSWER contradicts it. "
         'Return JSON with ONE object per fact: '
         '{"verdicts": [{"id": <fact number>, "supported": true/false, "contradicted": true/false}, ...]}'
     )
-    # max_tokens high: 22 per-fact verdict objects + reasoning need room or the JSON truncates.
+    # max_tokens sized so (input + budget) fits a free-tier per-minute token cap (e.g. 8000 TPM).
     try:
-        data = get_llm().json(JUDGE_SYSTEM, user, temperature=0.0, max_tokens=8000)
+        data = get_llm().json(JUDGE_SYSTEM, user, temperature=0.0, max_tokens=4500)
     except Exception:
         # Resilient fallback: plain completion, salvage the JSON object from the text.
-        txt = get_llm().complete(JUDGE_SYSTEM + "\nReturn ONLY a JSON object.", user, temperature=0.0, max_tokens=8000)
+        txt = get_llm().complete(JUDGE_SYSTEM + "\nReturn ONLY a JSON object.", user, temperature=0.0, max_tokens=4500)
         s, e = txt.find("{"), txt.rfind("}")
         try:
             data = json.loads(txt[s:e + 1]) if s != -1 and e != -1 else {}

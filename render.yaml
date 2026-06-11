@@ -14,7 +14,14 @@ services:
         value: openai/gpt-oss-120b
       - key: GROQ_API_KEY
         sync: false      # set in dashboard (secret)
+      - key: GROQ_API_KEY_FALLBACK
+        sync: false      # optional: a 2nd Groq key; used on rate-limit to extend daily quota
       - key: JSEARCH_API_KEY
         sync: false
       - key: ESTAT_APP_ID
         sync: false
+      # Optional hardening (sensible defaults if unset):
+      - key: ALLOWED_ORIGINS
+        sync: false      # set to your Vercel URL after the frontend deploys
+      - key: RATE_LIMIT_PER_MIN
+        value: "40"

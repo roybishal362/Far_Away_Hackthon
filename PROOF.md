@@ -45,11 +45,14 @@ reproducible, committed, and honest about its limits.
 - **N = 22 gold facts** — bigger than the original 7, still a curated set, not a public benchmark.
 - Grounded accuracy will not be 100%: a correct plan for one persona doesn't volunteer every fact
   (e.g. SSW-2 family rules for an SSW-1 nurse) — the per-fact verdicts in `eval/results.json` show exactly which.
-- Measured with `llama-3.3-70b-versatile` as both system and judge (free-tier daily quota). A stronger base model
-  scores higher *ungrounded* too, so part of this run's large gap reflects llama's weaker prior SSW knowledge — the
-  point is the consistent direction: grounding adds accuracy and removes contradictions, with a citation on every claim.
-- The plain LLM's ungrounded accuracy is non-trivial because the model already knows some SSW facts —
-  the value of grounding is eliminating contradictions and guaranteeing consistency, with a citation on every claim.
+- Measured with `llama-3.3-70b-versatile` as both system and judge (free-tier daily quota). On a stronger base
+  model the *ungrounded* baseline scores higher, so part of this run's large gap reflects llama's weaker prior SSW
+  knowledge — the point is the consistent direction: grounding adds accuracy and removes contradictions of official facts.
+- **Spot-checked on the deployed model `gpt-oss-120b`:** run 1 gave grounded **50% / 0 hallucinations** vs
+  ungrounded **4% / 1** — consistent with the llama run. A full `gpt-oss-120b` pass needs the Groq **Dev tier**: the
+  free per-minute token cap (8000 TPM) throttles the ablation's rapid back-to-back judge calls.
+- Grounded accuracy isn't 100% by design — the value is the **citation on every claim** and **0 contradictions of
+  official facts in every run**, which the ungrounded baseline never achieves.
 
 ---
 

@@ -37,6 +37,7 @@ def _get(name: str) -> str | None:
 class Settings:
     # LLM (the agents' reasoning brain) — Groq (free, fast, OpenAI-compatible)
     groq_api_key: str | None = None
+    groq_api_key_fallback: str | None = None  # used on rate-limit to extend daily quota
     llm_model: str = "openai/gpt-oss-120b"  # strong multilingual + reasoning; override via LLM_MODEL
 
     # Real-data tools
@@ -56,6 +57,7 @@ class Settings:
 def load_settings() -> Settings:
     return Settings(
         groq_api_key=_get("GROQ_API_KEY"),
+        groq_api_key_fallback=_get("GROQ_API_KEY_FALLBACK"),
         llm_model=_get("LLM_MODEL") or "openai/gpt-oss-120b",
         estat_app_id=_get("ESTAT_APP_ID"),
         jsearch_api_key=_get("JSEARCH_API_KEY"),
