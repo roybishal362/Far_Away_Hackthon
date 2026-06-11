@@ -8,10 +8,14 @@ from __future__ import annotations
 import requests
 
 from config import SETTINGS
+from core.tools import fixtures
 from core.tools.base import Tool, ToolResult
+from core.tools.cache import TTLCache
 from core.types import Citation
 
 JSEARCH_URL = "https://api.openwebninja.com/jsearch/search-v2"
+
+_CACHE = TTLCache()  # identical queries within the TTL don't re-hit the API (quota protection)
 
 
 def _extract_jobs(payload: dict) -> list[dict]:
@@ -35,8 +39,13 @@ class JobsTool(Tool):
         return bool(SETTINGS.jsearch_api_key)
 
     def run(self, query: str, location: str = "Japan", limit: int = 20, num_pages: int = 2) -> ToolResult:  # type: ignore[override]
+        cache_key = (query.strip().lower(), location.strip().lower(), limit, num_pages)
+        cached = _CACHE.get(cache_key)
+        if cached is not None:
+            return cached
+
         if not self.available():
-            return ToolResult.unconfigured(self.name, "JSEARCH_API_KEY")
+            return self._fallback(query, reason="JSEARCH_API_KEY not configured — cannot fetch live data")
 
         try:
             r = requests.get(
@@ -48,7 +57,7 @@ class JobsTool(Tool):
             r.raise_for_status()
             payload = r.json()
         except requests.RequestException as exc:
-            return ToolResult(ok=False, source="JSearch", error=f"JSearch request failed: {exc}")
+            return self._fallback(query, reason=f"JSearch request failed: {exc}")
 
         jobs = []
         for j in _extract_jobs(payload)[:limit]:
@@ -65,4 +74,26 @@ class JobsTool(Tool):
             Citation(source_url=j["apply_link"], title=f'{j["title"]} - {j["employer"]}')
             for j in jobs if j.get("apply_link") and j.get("title")
         ][:5]
-        return ToolResult(ok=True, source="JSearch (real-time jobs)", data=jobs, citations=citations)
+        result = ToolResult(ok=True, source="JSearch (real-time jobs)", data=jobs, citations=citations)
+        if jobs:
+            _CACHE.set(cache_key, result)
+        return result
+
+    def _fallback(self, query: str, reason: str) -> ToolResult:
+        """Honest fallback: serve RECORDED-real listings (clearly labeled as a cached
+        sample) when the live source is unavailable. Never fabricates — if no
+        recording exists, the real failure is reported."""
+        if fixtures.enabled():
+            jobs = fixtures.load_jobs_fixture(query)
+            if jobs:
+                citations = [
+                    Citation(source_url=j["apply_link"], title=f'{j["title"]} - {j["employer"]}')
+                    for j in jobs if j.get("apply_link") and j.get("title")
+                ][:5]
+                return ToolResult(
+                    ok=True,
+                    source="JSearch — cached sample (recorded from a real live run; live call unavailable)",
+                    data=jobs,
+                    citations=citations,
+                )
+        return ToolResult(ok=False, source="JSearch", error=reason)

@@ -9,13 +9,16 @@ venv/
 .env
 .streamlit/secrets.toml
 
-# Data & artifacts (keep the repo light; track in README how to get data)
-data/
+# Data — ignore local saved plans + raw, but COMMIT data/fixtures/ (recorded demo fallback)
+data/plans/
 data/raw/
 *.ckpt
 *.pt
 *.pkl
 *.joblib
+
+# Test cache
+.pytest_cache/
 
 # OS / editor
 .DS_Store

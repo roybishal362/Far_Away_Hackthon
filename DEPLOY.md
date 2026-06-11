@@ -19,5 +19,13 @@ Two pieces: the **FastAPI backend** (Render) and the **Next.js frontend** (Verce
 4. Deploy → you get `https://kakehashi.vercel.app`. **That public URL is your Round 1 demo link.**
 
 ## Notes
-- The backend already allows cross-origin requests (CORS open) — fine for the demo; restrict later.
+- **CORS:** open by default for dev. After the frontend deploys, set `ALLOWED_ORIGINS=https://<your-app>.vercel.app` on Render.
+- **Hardening env (all optional):** `RATE_LIMIT_PER_MIN` (default 40/IP), `TOOL_CACHE_TTL` (default 600s),
+  `KAKEHASHI_CACHED_FALLBACK` (default 1 — serve recorded-real fixtures, clearly labeled, if a live API fails).
 - Keys live only in the host dashboards / local `.env`, never in the repo.
+
+## Pre-deploy proof checklist (do these BEFORE recording the demo video)
+1. `python -m pytest -q` — all green.
+2. `python scripts/record_fixtures.py` — records real JSearch listings into `data/fixtures/`; **commit them** (demo survives API outages).
+3. `python scripts/run_eval.py` — pins the ablation: writes `eval/results.json` + `eval/ablation_chart.png` and rewrites the PROOF.md table; **commit all three**. The deck/README numbers must be THESE numbers.
+4. Deploy, hit `/health`, click all three persona chips on the live URL from a phone.

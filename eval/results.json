@@ -1,0 +1,1416 @@
+{
+  "aggregate": {
+    "gold_n": 22,
+    "runs": 6,
+    "model": "llama-3.3-70b-versatile",
+    "timestamp_utc": "2026-06-11T13:26:33+00:00",
+    "grounded_accuracy_mean": 0.507,
+    "grounded_accuracy_min": 0.364,
+    "grounded_accuracy_max": 0.636,
+    "ungrounded_accuracy_mean": 0.045,
+    "ungrounded_accuracy_min": 0.0,
+    "ungrounded_accuracy_max": 0.091,
+    "grounded_hallucinations_total": 0,
+    "ungrounded_hallucinations_total": 69
+  },
+  "runs": [
+    {
+      "persona": "nurse_no_japanese",
+      "run": 1,
+      "gold_n": 22,
+      "grounded_accuracy": 0.591,
+      "ungrounded_accuracy": 0.0,
+      "grounded_hallucinations": 0,
+      "ungrounded_hallucinations": 22,
+      "grounded_verdicts": [
+        {
+          "id": 1,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ],
+      "ungrounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 2,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 3,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 5,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 7,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 18,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 20,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": true
+        }
+      ]
+    },
+    {
+      "persona": "nurse_no_japanese",
+      "run": 2,
+      "gold_n": 22,
+      "grounded_accuracy": 0.409,
+      "ungrounded_accuracy": 0.0,
+      "grounded_hallucinations": 0,
+      "ungrounded_hallucinations": 3,
+      "grounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ],
+      "ungrounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 2,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 3,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ]
+    },
+    {
+      "persona": "farm_worker_n5",
+      "run": 1,
+      "gold_n": 22,
+      "grounded_accuracy": 0.364,
+      "ungrounded_accuracy": 0.091,
+      "grounded_hallucinations": 0,
+      "ungrounded_hallucinations": 20,
+      "grounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": true,
+          "contradicted": false
+        }
+      ],
+      "ungrounded_verdicts": [
+        {
+          "id": 1,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 3,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 5,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 7,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 11,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 18,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 20,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": true
+        }
+      ]
+    },
+    {
+      "persona": "farm_worker_n5",
+      "run": 2,
+      "gold_n": 22,
+      "grounded_accuracy": 0.636,
+      "ungrounded_accuracy": 0.091,
+      "grounded_hallucinations": 0,
+      "ungrounded_hallucinations": 1,
+      "grounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ],
+      "ungrounded_verdicts": [
+        {
+          "id": 1,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 3,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ]
+    },
+    {
+      "persona": "construction_n4",
+      "run": 1,
+      "gold_n": 22,
+      "grounded_accuracy": 0.545,
+      "ungrounded_accuracy": 0.0,
+      "grounded_hallucinations": 0,
+      "ungrounded_hallucinations": 22,
+      "grounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ],
+      "ungrounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 2,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 3,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 5,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 7,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 18,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 20,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": true
+        }
+      ]
+    },
+    {
+      "persona": "construction_n4",
+      "run": 2,
+      "gold_n": 22,
+      "grounded_accuracy": 0.5,
+      "ungrounded_accuracy": 0.091,
+      "grounded_hallucinations": 0,
+      "ungrounded_hallucinations": 1,
+      "grounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ],
+      "ungrounded_verdicts": [
+        {
+          "id": 1,
+          "supported": false,
+          "contradicted": true
+        },
+        {
+          "id": 2,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 3,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 4,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 5,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 6,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 7,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 8,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 9,
+          "supported": true,
+          "contradicted": false
+        },
+        {
+          "id": 10,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 11,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 12,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 13,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 14,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 15,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 16,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 17,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 18,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 19,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 20,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 21,
+          "supported": false,
+          "contradicted": false
+        },
+        {
+          "id": 22,
+          "supported": false,
+          "contradicted": false
+        }
+      ]
+    }
+  ]
+}

@@ -21,25 +21,32 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
+from api.middleware import RateLimitMiddleware
 from config import SETTINGS
 from core import chat as chat_mod
 from core import resume as resume_mod
 from core import store
 from core.agents._common import profile_text
 from core.dossier import build as build_dossier
-from core.engine import Engine, RunResult
+from core.engine import Engine, RunResult, default_agents
 from core.eval.harness import run_ablation
 from core.types import Citation, WorkerProfile
 
 app = FastAPI(title="Kakehashi API", version="0.1.0")
 
-# Dev-open CORS so the Next.js dev server can call us. Restrict in production.
+# CORS: open by default for dev; in production set ALLOWED_ORIGINS to the
+# deployed frontend, e.g. ALLOWED_ORIGINS=https://kakehashi.vercel.app
+import os as _os
+_origins = [o.strip() for o in _os.environ.get("ALLOWED_ORIGINS", "*").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Per-IP rate limiting (demo/quota protection) — see api/middleware.py
+app.add_middleware(RateLimitMiddleware)
 
 
 class ProfileIn(BaseModel):
@@ -125,7 +132,7 @@ def run_stream(p: ProfileIn) -> StreamingResponse:
     threading.Thread(target=worker, daemon=True).start()
 
     def gen():
-        yield _sse("start", {"agents": ["pathway", "jobs", "procedure", "prep", "journey"]})
+        yield _sse("start", {"agents": [a.name for a in default_agents()]})
         while True:
             kind, data = q.get()
             if kind is DONE:

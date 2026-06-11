@@ -76,4 +76,52 @@ FACTS: list[dict] = [
         "source_url": "https://www.mofa.go.jp/press/release/press6e_000266.html",
         "title": "MOFA - Japan-India SSW MoC (eliminate malicious intermediaries)", "tags": ["india", "partnership", "scams", "intermediaries"],
     },
+    {
+        "text": "SSW-1 status is granted in renewable increments of 1 year, 6 months, or 4 months, up to the total maximum stay of five years.",
+        "source_url": ISA_SSW, "title": "ISA - SSW-1 period of stay", "tags": ["ssw1", "duration", "renewal"],
+    },
+    {
+        "text": "SSW-2 status is granted in renewable increments of 3 years, 1 year, or 6 months, with no cap on the total period of stay.",
+        "source_url": ISA_SSW, "title": "ISA - SSW-2 period of stay", "tags": ["ssw2", "duration", "renewal"],
+    },
+    {
+        "text": "Organizations accepting SSW-1 workers must provide a formal support plan - including pre-arrival orientation, help securing housing, daily-life orientation, opportunities to learn Japanese, and handling of consultations/complaints - or entrust this support to a government-registered Registered Support Organization.",
+        "source_url": SSW_OFFICIAL, "title": "ISA - SSW-1 support plan & Registered Support Organizations", "tags": ["ssw1", "support", "accepting-organization", "rights"],
+    },
+    {
+        "text": "An SSW worker's remuneration must be equal to or greater than that of a Japanese national performing comparable work.",
+        "source_url": MOFA_SSW, "title": "MOFA - SSW equal-pay requirement", "tags": ["salary", "rights", "equal-pay"],
+    },
+    {
+        "text": "SSW rules prohibit security deposits and penalty-clause contracts: a worker who has paid a deposit ('hoshokin') to a sending/intermediary organization, or whose contract imposes penalties for quitting, does not meet the acceptance conditions. Workers should never pay such deposits.",
+        "source_url": SSW_OFFICIAL, "title": "ISA - no deposits / no penalty contracts", "tags": ["scams", "rights", "deposits", "intermediaries"],
+    },
+    {
+        "text": "Foreign nationals who successfully completed Technical Intern Training (ii) (3 years of TITP) are exempt from both the skills test and the Japanese-language test when moving to SSW-1 in the corresponding field.",
+        "source_url": MOFA_SSW, "title": "MOFA - TITP(ii) completers' test exemption", "tags": ["titp", "exemption", "tests"],
+    },
+    {
+        "text": "The JFT-Basic (Japan Foundation Test for Basic Japanese) is a computer-based test measuring everyday-life Japanese (roughly CEFR A2), conducted by the Japan Foundation and held overseas in designated countries including India.",
+        "source_url": "https://www.jpf.go.jp/jft-basic/e/", "title": "Japan Foundation - JFT-Basic", "tags": ["jft", "language", "tests", "india"],
+    },
+    {
+        "text": "The JLPT (Japanese-Language Proficiency Test) has five levels N1 (hardest) to N5; N4 - the usual SSW language bar - certifies the ability to understand basic Japanese. It is held worldwide, typically twice a year.",
+        "source_url": "https://www.jlpt.jp/e/", "title": "JLPT - levels & schedule", "tags": ["jlpt", "language", "tests"],
+    },
+    {
+        "text": "For the caregiving/nursing-care sector, applicants must additionally pass the Nursing Care Japanese Language Evaluation Test on top of the general Japanese-language requirement.",
+        "source_url": SSW_OFFICIAL, "title": "ISA - extra language test for nursing care", "tags": ["caregiving", "language", "tests"],
+    },
+    {
+        "text": "SSW sector skills tests are conducted both in Japan and overseas in designated countries; test schedules and overseas venues are published by the sector bodies and the ISA.",
+        "source_url": SSW_OFFICIAL, "title": "ISA - skills tests in Japan and overseas", "tags": ["tests", "skills", "overseas"],
+    },
+    {
+        "text": "Typical from-abroad SSW flow: pass the skills and Japanese tests, sign an employment contract with a Japanese accepting organization, the organization applies to the Immigration Services Agency for a Certificate of Eligibility (COE), then the worker applies for the visa at a Japanese embassy/consulate with the COE and travels to Japan.",
+        "source_url": ISA_SSW, "title": "ISA - application flow (tests -> contract -> COE -> visa)", "tags": ["procedure", "coe", "visa", "steps"],
+    },
+    {
+        "text": "SSW workers may change employers within the same industry field (or across fields if they meet that field's test requirements), completing the required immigration procedures - the visa is not locked to one employer.",
+        "source_url": ISA_SSW, "title": "ISA - job change within the same field", "tags": ["jobs", "rights", "job-change"],
+    },
 ]

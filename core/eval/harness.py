@@ -34,13 +34,17 @@ class EvalReport:
     ungrounded_accuracy: float
     grounded_hallucinations: int
     ungrounded_hallucinations: int
+    # Per-fact verdicts (1-indexed ids) so anyone can audit exactly which gold
+    # facts each side covered or contradicted — not just the aggregate number.
+    grounded_verdicts: list[dict] = None  # type: ignore[assignment]
+    ungrounded_verdicts: list[dict] = None  # type: ignore[assignment]
 
     def to_dict(self) -> dict:
         return asdict(self)
 
 
-def _judge(answer_text: str) -> tuple[int, int]:
-    """Return (covered_count, contradicted_count) of the answer vs GOLD.
+def _judge(answer_text: str) -> tuple[int, int, list[dict]]:
+    """Return (covered_count, contradicted_count, verdicts) of the answer vs GOLD.
 
     Uses a per-fact verdict object (not an index list) so the model can't mash
     indices into one number — a real bug that silently zeroed the score.
@@ -52,11 +56,21 @@ def _judge(answer_text: str) -> tuple[int, int]:
         'Return JSON with ONE object per fact: '
         '{"verdicts": [{"id": <fact number>, "supported": true/false, "contradicted": true/false}, ...]}'
     )
-    data = get_llm().json(JUDGE_SYSTEM, user, temperature=0.0)  # deterministic scoring
-    verdicts = data.get("verdicts") or []
-    covered = sum(1 for v in verdicts if isinstance(v, dict) and v.get("supported"))
-    contradicted = sum(1 for v in verdicts if isinstance(v, dict) and v.get("contradicted"))
-    return covered, contradicted
+    # max_tokens high: 22 per-fact verdict objects + reasoning need room or the JSON truncates.
+    try:
+        data = get_llm().json(JUDGE_SYSTEM, user, temperature=0.0, max_tokens=8000)
+    except Exception:
+        # Resilient fallback: plain completion, salvage the JSON object from the text.
+        txt = get_llm().complete(JUDGE_SYSTEM + "\nReturn ONLY a JSON object.", user, temperature=0.0, max_tokens=8000)
+        s, e = txt.find("{"), txt.rfind("}")
+        try:
+            data = json.loads(txt[s:e + 1]) if s != -1 and e != -1 else {}
+        except Exception:
+            data = {}
+    verdicts = [v for v in (data.get("verdicts") or []) if isinstance(v, dict)]
+    covered = sum(1 for v in verdicts if v.get("supported"))
+    contradicted = sum(1 for v in verdicts if v.get("contradicted"))
+    return covered, contradicted, verdicts
 
 
 def run_ablation(profile: WorkerProfile) -> EvalReport:
@@ -72,7 +86,7 @@ def run_ablation(profile: WorkerProfile) -> EvalReport:
         if r.ok:
             parts.append(json.dumps(r.data))
     grounded_text = "\n".join(parts)
-    g_cov, g_hall = _judge(grounded_text)
+    g_cov, g_hall, g_verdicts = _judge(grounded_text)
 
     # (B) Ungrounded — same ask, no official context
     ungrounded = get_llm().json(
@@ -81,7 +95,7 @@ def run_ablation(profile: WorkerProfile) -> EvalReport:
         'JSON: {"requirements": ["..."], "limits": ["..."]}',
         temperature=0.0,
     )
-    u_cov, u_hall = _judge(json.dumps(ungrounded))
+    u_cov, u_hall, u_verdicts = _judge(json.dumps(ungrounded))
 
     n = len(GOLD)
     return EvalReport(
@@ -90,4 +104,6 @@ def run_ablation(profile: WorkerProfile) -> EvalReport:
         ungrounded_accuracy=round(u_cov / n, 3),
         grounded_hallucinations=g_hall,
         ungrounded_hallucinations=u_hall,
+        grounded_verdicts=g_verdicts,
+        ungrounded_verdicts=u_verdicts,
     )
