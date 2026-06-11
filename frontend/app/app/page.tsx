@@ -56,7 +56,9 @@ export default function AppPage() {
       <div className="relative isolate overflow-hidden rounded-3xl p-7 text-white shadow-card sm:p-9">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/fuji-sakura.jpg" alt="" className="absolute inset-0 -z-20 h-full w-full object-cover" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-900/94 via-indigo-900/90 to-sakura-600/70" />
+        {/* solid base scrim guarantees text legibility, gradient adds depth + a hint of the photo */}
+        <div className="absolute inset-0 -z-10 bg-indigo-900/82" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-900/55 via-indigo-900/35 to-sakura-600/35" />
         <span className="eyebrow text-sakura-300">Build my plan</span>
         <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Your personal migration plan, in one run.</h1>
         <p className="mt-2 max-w-2xl text-white/80">
